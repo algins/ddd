@@ -7,13 +7,19 @@ use Slim\Views\PhpRenderer;
 use DI\Container;
 
 $container = new Container();
+$app = AppFactory::createFromContainer($container);
+$routeParser = $app->getRouteCollector()->getRouteParser();
+
+$container->set('router', function () use ($routeParser) {
+    return $routeParser;
+});
+
 $container->set('renderer', function () {
     $renderer = new PhpRenderer(__DIR__ . '/../templates');
     $renderer->setLayout('layout.phtml');
     return $renderer;
 });
 
-$app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
 
 $app->get('/posts', 'App\PostController:index')->setName('index');

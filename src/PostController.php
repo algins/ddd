@@ -45,7 +45,11 @@ class PostController
             $request->getParsedBodyParam('body')
         );
 
-        return $response->withRedirect($router->urlFor('posts'));
+        $redirectUrl = $this->container
+            ->get('router')
+            ->urlFor('index');
+
+        return $response->withRedirect($redirectUrl);
     }
 
     public function show()
