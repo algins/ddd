@@ -1,33 +1,55 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
 
-use Slim\Factory\AppFactory;
-use Slim\Views\PhpRenderer;
-use DI\Container;
+define('LARAVEL_START', microtime(true));
 
-$container = new Container();
-$app = AppFactory::createFromContainer($container);
-$routeParser = $app->getRouteCollector()->getRouteParser();
+/*
+|--------------------------------------------------------------------------
+| Check If The Application Is Under Maintenance
+|--------------------------------------------------------------------------
+|
+| If the application is in maintenance / demo mode via the "down" command
+| we will load this file so that any pre-rendered content can be shown
+| instead of starting the framework, which could cause an exception.
+|
+*/
 
-$container->set('router', function () use ($routeParser) {
-    return $routeParser;
-});
+if (file_exists(__DIR__.'/../storage/framework/maintenance.php')) {
+    require __DIR__.'/../storage/framework/maintenance.php';
+}
 
-$container->set('renderer', function () {
-    $renderer = new PhpRenderer(__DIR__ . '/../templates');
-    $renderer->setLayout('layout.phtml');
-    return $renderer;
-});
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| this application. We just need to utilize it! We'll simply require it
+| into the script here so we don't need to manually load our classes.
+|
+*/
 
-$app->addErrorMiddleware(true, true, true);
+require __DIR__.'/../vendor/autoload.php';
 
-$app->get('/posts', 'App\PostController:index')->setName('index');
-$app->get('/posts/create', 'App\PostController:create')->setName('create');
-$app->post('/posts', 'App\PostController:store')->setName('store');
-$app->get('/posts/{id}', 'App\PostController:show')->setName('show');
-$app->get('/posts/{id}/edit', 'App\PostController:edit')->setName('edit');
-$app->patch('/posts/{id}', 'App\PostController:update')->setName('update');
-$app->delete('/posts/{id}', 'App\PostController:destroy')->setName('destroy');
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+| Once we have the application, we can handle the incoming request using
+| the application's HTTP kernel. Then, we will send the response back
+| to this client's browser, allowing them to enjoy our application.
+|
+*/
 
-$app->run();
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+$kernel = $app->make(Kernel::class);
+
+$response = tap($kernel->handle(
+    $request = Request::capture()
+))->send();
+
+$kernel->terminate($request, $response);
