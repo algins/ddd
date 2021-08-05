@@ -1,6 +1,9 @@
 {
     "name": "algins/ddd",
     "description": "Domain Driven Desing example application",
+    "autoload": {
+        "psr-4": {"App\\": "src/"}
+    },
     "require": {
         "slim/slim": "^4.8",
         "slim/psr7": "^1.4",

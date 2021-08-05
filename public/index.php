@@ -1,5 +1,6 @@
 <?php
 
+use App\PostController;
 use Slim\Factory\AppFactory;
 use Slim\Views\PhpRenderer;
 use DI\Container;
@@ -14,9 +15,6 @@ $container->set('renderer', function () {
 $app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
 
-// $app->get('/', HomeController::class);
-$app->get('/', function ($request, $response) {
-    return $this->get('renderer')->render($response, 'index.phtml');
-});
+$app->get('/', PostController::class);
 
 $app->run();

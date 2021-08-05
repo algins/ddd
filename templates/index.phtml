@@ -7,6 +7,15 @@
         <title>Domain Driven Design</title>
     </head>
     <body>
-
+        <table>
+            <tbody>
+                <?php foreach ($posts as $post) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($post->title()) ?></td>
+                        <td><?= htmlspecialchars($post->content()) ?></td>
+                    <tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
     </body>
 </html>
