@@ -2,19 +2,24 @@
 
 namespace App;
 
-/**
-* Model (Model layer). 
-* Represents blog post.
-*/
 class Post
 {
     private string $title;
     private string $content;
 
-    // named constructor pattern
     public static function writeNewFrom(string $title, string $content): static
     {
         return new static($title, $content);
+    }
+
+    public function title(): string
+    {
+        return $this->title;
+    }
+
+    public function content(): string
+    {
+        return $this->content;
     }
 
     private function __construct(string $title, string $content)
@@ -39,15 +44,5 @@ class Post
         }
 
         $this->content = $content;
-    }
-
-    public function title(): string
-    {
-        return $this->title;
-    }
-
-    public function content(): string
-    {
-        return $this->content;
     }
 }

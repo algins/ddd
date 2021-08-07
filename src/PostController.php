@@ -4,11 +4,6 @@ namespace App;
 
 use Psr\Container\ContainerInterface;
 
-/**
-* Controller (Controller layer). 
-* Organizes and orchestrates the View and the Model.
-* Receives HTTP request and returns HTTP response.
-*/
 class PostController
 {
     private $renderer;
