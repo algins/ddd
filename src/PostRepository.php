@@ -2,27 +2,13 @@
 
 namespace App;
 
-class PostRepository
+interface PostRepository
 {
-    public function __construct()
-    {
-        session_start();
+    public function findAll(): array;
 
-        if (!array_key_exists('posts', $_SESSION)) {
-            $_SESSION['posts'] = [];
-        }
-    }
+    public function findById(string $id): Post;
 
-    public function findAll(): array
-    {
-        return $_SESSION['posts'];
-    }
+    public function save(Post $post): Post;
 
-    public function add(Post $post): void
-    {
-        $_SESSION['posts'][] = [
-            'title' => $post->title(), 
-            'content' => $post->content(),
-        ];
-    }
+    public function deleteById(string $id): void;
 }

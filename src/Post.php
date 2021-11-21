@@ -4,45 +4,29 @@ namespace App;
 
 class Post
 {
+    private string $id;
     private string $title;
     private string $content;
 
-    public static function writeNewFrom(string $title, string $content): static
+    public function __construct(string $id, string $title, string $content)
     {
-        return new static($title, $content);
+        $this->id = $id;
+        $this->title = $title;
+        $this->content = $content;
     }
 
-    public function title(): string
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function content(): string
+    public function getContent(): string
     {
         return $this->content;
-    }
-
-    private function __construct(string $title, string $content)
-    {
-        $this->setTitle($title);
-        $this->setContent($content);
-    }
-
-    private function setTitle(string $title): void
-    {
-        if (empty($title)) {
-            throw new RuntimeException('Title cannot be empty');
-        }
-
-        $this->title = $title;
-    }
-
-    private function setContent(string $content): void
-    {
-        if (empty($content)) {
-            throw new RuntimeException('Content cannot be empty');
-        }
-
-        $this->content = $content;
     }
 }

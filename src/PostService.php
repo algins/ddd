@@ -4,16 +4,30 @@ namespace App;
 
 class PostService
 {
-    public function createPost(string $title, string $content): Post
-    {
-        $post = Post::writeNewFrom($title, $content);
-        (new PostRepository())->add($post);
+    private PostRepository $repository;
 
-        return $post;
+    public function __construct(PostRepository $repository)
+    {
+        $this->repository = $repository;
     }
 
-    public function findAllPosts()
+    public function findAll(): array
     {
-        return (new PostRepository())->findAll();
+        return $this->repository->findAll();
+    }
+
+    public function findById(string $id): Post
+    {
+        return $this->repository->findById($id);
+    }
+
+    public function save(Post $post): Post
+    {
+        return $this->repository->save($post);
+    }
+
+    public function deleteById(string $id): void
+    {
+        $this->repository->deleteById($id);
     }
 }

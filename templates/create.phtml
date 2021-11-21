@@ -1,0 +1,23 @@
+<a href="/posts">List</a>
+<hr>
+<?php if (count($errors) > 0): ?>
+    <?php foreach ($errors as $error): ?>
+        <div><?= $error[0] ?></div>
+    <?php endforeach ?>
+    <br>
+<?php endif ?>
+<form action="/posts" method="post">
+    <div>
+        <label>Title *</label>
+        <br>
+        <input type="text" name="post[title]" value="<?= htmlspecialchars($postData['title'] ?? '') ?>">
+    </div>
+    <br>
+    <div>
+        <label>Content *</label>
+        <br>
+        <textarea name="post[content]"><?= htmlspecialchars($postData['content'] ?? '') ?></textarea>
+    </div>
+    <br>
+    <input type="submit" value="Create">
+</form>

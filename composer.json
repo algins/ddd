@@ -9,6 +9,7 @@
         "slim/psr7": "^1.4",
         "slim/http": "^1.2",
         "php-di/php-di": "^6.3",
-        "slim/php-view": "^3.1"
+        "slim/php-view": "^3.1",
+        "vlucas/valitron": "^1.4"
     }
 }
