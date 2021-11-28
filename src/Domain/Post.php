@@ -42,7 +42,7 @@ class Post extends AggregateRoot
     public function changeTitleFor(string $newTitle): void
     {
         $event = new PostTitleWasChanged($this->id, $newTitle);
-        
+
         $this->recordApplyAndPublishThat($event);
     }
 

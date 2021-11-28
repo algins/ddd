@@ -16,6 +16,6 @@ class PostWasRecreatedSubscriber implements DomainEventSubscriber
     {
         return in_array($event::class, [
             PostWasRecreated::class,
-        ]);
+        ], true);
     }
 }
