@@ -1,13 +1,19 @@
 <?php
 
-namespace App;
+namespace App\Domain\Repositories;
 
+use App\Domain\Post;
+use App\Infrastructure\Projections\Projector;
 use IllegalArgumentException;
 
 class SessionPostRepository implements PostRepository
 {
-    public function __construct()
+    private Projector $projector;
+
+    public function __construct(Projector $projector)
     {
+        $this->projector = $projector;
+
         session_start();
 
         if (!array_key_exists('posts', $_SESSION)) {
@@ -18,7 +24,7 @@ class SessionPostRepository implements PostRepository
     public function findAll(): array
     {
         return array_map(function ($post) {
-            return new Post($post['id'], $post['title'], $post['content']);
+            return Post::recreateFrom($post['id'], $post['title'], $post['content']);
         }, $_SESSION['posts']);
     }
 
@@ -30,10 +36,10 @@ class SessionPostRepository implements PostRepository
             throw new IllegalArgumentException();
         }
 
-        return new Post($post['id'], $post['title'], $post['content']);
+        return Post::recreateFrom($post['id'], $post['title'], $post['content']);
     }
 
-    public function save(Post $post): Post
+    public function save(Post $post): void
     {
         $_SESSION['posts'][$post->getId()] = [
             'id' => $post->getId(),
@@ -41,13 +47,13 @@ class SessionPostRepository implements PostRepository
             'content' => $post->getContent(),
         ];
 
-        return $post;
+        $this->projector->project($post->recordedEvents());
     }
 
-    public function deleteById(string $id): void
+    public function delete(Post $post): void
     {
-        $post = $this->findById($id);
-
         unset($_SESSION['posts'][$post->getId()]);
+
+        $this->projector->project($post->recordedEvents());
     }
 }

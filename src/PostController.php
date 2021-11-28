@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Domain\Post;
+use App\Domain\Repositories\PostRepository;
 use IllegalArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -12,16 +14,16 @@ use Valitron\Validator;
 class PostController
 {
     private PhpRenderer $renderer;
-    private PostService $service;
+    private PostRepository $repository;
 
-    public function __construct(ContainerInterface $container, PostService $service) {
+    public function __construct(ContainerInterface $container, PostRepository $repository) {
         $this->renderer = $container->get('renderer');
-        $this->service = $service;
+        $this->repository = $repository;
     }
 
     public function index(Request $request, Response $response): Response
     {
-        $posts = $this->service->findAll();
+        $posts = $this->repository->findAll();
 
         $params = [
             'posts' => $posts,
@@ -48,10 +50,8 @@ class PostController
         $validator->rule('required', ['title', 'content']);
 
         if ($validator->validate()) {
-            $postId = uniqid();
-            $post = new Post($postId, $postData['title'], $postData['content']);
-            $this->service->save($post);
-
+            $post = Post::writeNewFrom($postData['title'], $postData['content']);
+            $this->repository->save($post);
             return $response->withRedirect('/posts');
         }
 
@@ -68,7 +68,7 @@ class PostController
         $id = $args['id'];
 
         try {
-            $post = $this->service->findById($id);
+            $post = $this->repository->findById($id);
         } catch (IllegalArgumentException $e) {
             return $response->write('Post not found')->withStatus(404);
         }
@@ -90,7 +90,7 @@ class PostController
         $id = $args['id'];
 
         try {
-            $post = $this->service->findById($id);
+            $post = $this->repository->findById($id);
         } catch (IllegalArgumentException $e) {
             return $response->write('Post not found')->withStatus(404);
         }
@@ -101,10 +101,9 @@ class PostController
         $validator->rule('required', ['title', 'content']);
 
         if ($validator->validate()) {
-            $postId = $post->getId();
-            $post = new Post($postId, $postData['title'], $postData['content']);
-            $this->service->save($post);
-
+            $post->changeTitleFor($postData['title']);
+            $post->changeContentFor($postData['content']);
+            $this->repository->save($post);
             return $response->withRedirect('/posts');
         }
 
@@ -125,10 +124,12 @@ class PostController
         $id = $args['id'];
 
         try {
-            $this->service->deleteById($id);
+            $post = $this->repository->findById($id);
         } catch (IllegalArgumentException $e) {
             return $response->write('Post not found')->withStatus(404);
         }
+
+        $this->repository->delete($post);
 
         return $response->withRedirect('/posts');
     }

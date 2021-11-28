@@ -1,9 +1,17 @@
 <?php
 
 use App\PostController;
-use App\PostRepository;
-use App\PostService;
-use App\SessionPostRepository;
+use App\Domain\Events\DomainEventPublisher;
+use App\Domain\Repositories\PostRepository;
+use App\Domain\Repositories\SessionPostRepository;
+use App\Domain\Subscribers\PostContentWasChangedSubscriber;
+use App\Domain\Subscribers\PostTitleWasChangedSubscriber;
+use App\Domain\Subscribers\PostWasCreatedSubscriber;
+use App\Infrastructure\Projections\Projector;
+use App\Infrastructure\Projections\Session\PostContentWasChangedProjection;
+use App\Infrastructure\Projections\Session\PostTitleWasChangedProjection;
+use App\Infrastructure\Projections\Session\PostWasCreatedProjection;
+use App\Infrastructure\Projections\Session\PostWasRecreatedProjection;
 use DI\Container;
 use Slim\Factory\AppFactory;
 use Slim\Middleware\MethodOverrideMiddleware;
@@ -20,12 +28,26 @@ $container->set('renderer', function (Container $container) {
 });
 
 $container->set(PostRepository::class, function () {
-    return new SessionPostRepository();
+    $projector = new Projector();
+    $projector->register([
+        new PostContentWasChangedProjection(),
+        new PostTitleWasChangedProjection(),
+        new PostWasCreatedProjection(),
+        new PostWasRecreatedProjection(),
+    ]);
+    return new SessionPostRepository($projector);
 });
 
-$container->set(PostService::class, function (Container $container) {
+$container->set(PostController::class, function (Container $container) {
     $postRepository = $container->get(PostRepository::class);
-    return new PostService($postRepository);
+    return new PostController($container, $postRepository);
+});
+
+$container->set(DomainEventPublisher::class, function () {
+    DomainEventPublisher::instance()->subscribe(new PostContentWasChangedSubscriber());
+    DomainEventPublisher::instance()->subscribe(new PostTitleWasChangedSubscriber());
+    DomainEventPublisher::instance()->subscribe(new PostWasCreatedSubscriber());
+    DomainEventPublisher::instance()->subscribe(new PostWasRecreatedSubscriber());
 });
 
 $app = AppFactory::createFromContainer($container);
