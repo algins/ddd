@@ -12,27 +12,28 @@ class Post extends AggregateRoot
     private string $id;
     private string $title;
     private string $content;
+    private Author $author;
 
     private function __construct(string $id)
     {
         $this->id = $id;
     }
 
-    public static function writeNewFrom(string $title, string $content): self
+    public static function writeNewFrom(string $title, string $content, Author $author): self
     {
         $id = PostId::create();
         $post = new static($id);
-        $event = new PostWasCreated($id, $title, $content);
+        $event = new PostWasCreated($id, $title, $content, $author);
 
         $post->recordApplyAndPublishThat($event);
 
         return $post;
     }
 
-    public static function recreateFrom(string $id, string $title, string $content): self
+    public static function recreateFrom(string $id, string $title, string $content, Author $author): self
     {
         $post = new static($id);
-        $event = new PostWasRecreated($id, $title, $content);
+        $event = new PostWasRecreated($id, $title, $content, $author);
 
         $post->recordApplyAndPublishThat($event);
 
@@ -58,6 +59,7 @@ class Post extends AggregateRoot
         $this->id = $event->getId();
         $this->title = $event->getTitle();
         $this->content = $event->getContent();
+        $this->author = $event->getAuthor();
     }
 
     protected function applyPostWasRecreated(PostWasRecreated $event): void
@@ -65,6 +67,7 @@ class Post extends AggregateRoot
         $this->id = $event->getId();
         $this->title = $event->getTitle();
         $this->content = $event->getContent();
+        $this->author = $event->getAuthor();
     }
 
     protected function applyPostTitleWasChanged(PostTitleWasChanged $event): void
@@ -90,5 +93,10 @@ class Post extends AggregateRoot
     public function getContent(): string
     {
         return $this->content;
+    }
+
+    public function getAuthor(): Author
+    {
+        return $this->author;
     }
 }

@@ -8,6 +8,7 @@
                     <a href="/posts/<?= $post->getId() ?>/edit"><?= htmlspecialchars($post->getTitle()) ?></a>
                 </td>
                 <td><?= htmlspecialchars($post->getContent()) ?></td>
+                <td><?= $post->getAuthor()->getFirstName() .  ' ' . $post->getAuthor()->getLastName() ?></td>
                 <td width="10%">
                     <form action="/posts/<?= $post->getId() ?>" method="post">
                         <input type="hidden" name="_METHOD" value="DELETE">

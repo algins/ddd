@@ -2,6 +2,7 @@
 
 namespace App\Domain\Repositories;
 
+use App\Domain\Author;
 use App\Domain\Post;
 use App\Infrastructure\Projections\Projector;
 use IllegalArgumentException;
@@ -24,7 +25,12 @@ class SessionPostRepository implements PostRepository
     public function findAll(): array
     {
         return array_map(function ($post) {
-            return Post::recreateFrom($post['id'], $post['title'], $post['content']);
+            return Post::recreateFrom(
+                $post['id'],
+                $post['title'],
+                $post['content'],
+                new Author($post['author_first_name'], $post['author_last_name'])
+            );
         }, $_SESSION['posts']);
     }
 
@@ -36,15 +42,24 @@ class SessionPostRepository implements PostRepository
             throw new IllegalArgumentException();
         }
 
-        return Post::recreateFrom($post['id'], $post['title'], $post['content']);
+        return Post::recreateFrom(
+            $post['id'],
+            $post['title'],
+            $post['content'],
+            new Author($post['author_first_name'], $post['author_last_name'])
+        );
     }
 
     public function save(Post $post): void
     {
+        $postAuthor = $post->getAuthor();
+
         $_SESSION['posts'][$post->getId()] = [
             'id' => $post->getId(),
             'title' => $post->getTitle(),
             'content' => $post->getContent(),
+            'author_first_name' => $postAuthor->getFirstName(),
+            'author_last_name' => $postAuthor->getLastName(),
         ];
 
         $this->projector->project($post->recordedEvents());

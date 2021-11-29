@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Domain\Author;
 use App\Domain\Post;
 use App\Domain\Repositories\PostRepository;
 use IllegalArgumentException;
@@ -16,7 +17,8 @@ class PostController
     private PhpRenderer $renderer;
     private PostRepository $repository;
 
-    public function __construct(ContainerInterface $container, PostRepository $repository) {
+    public function __construct(ContainerInterface $container, PostRepository $repository)
+    {
         $this->renderer = $container->get('renderer');
         $this->repository = $repository;
     }
@@ -50,7 +52,8 @@ class PostController
         $validator->rule('required', ['title', 'content']);
 
         if ($validator->validate()) {
-            $post = Post::writeNewFrom($postData['title'], $postData['content']);
+            $postAuthor = new Author('John', 'Doe');
+            $post = Post::writeNewFrom($postData['title'], $postData['content'], $postAuthor);
             $this->repository->save($post);
             return $response->withRedirect('/posts');
         }
