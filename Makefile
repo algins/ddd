@@ -3,3 +3,6 @@ start:
 
 lint:
 	composer phpcs
+
+lint-fix:
+	composer phpcbf
