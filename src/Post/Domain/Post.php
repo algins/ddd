@@ -3,7 +3,6 @@
 namespace App\Post\Domain;
 
 use App\Post\Domain\Events\PostWasCreated;
-use App\Post\Domain\Events\PostWasRecreated;
 use App\Post\Domain\Events\PostTitleWasChanged;
 use App\Post\Domain\Events\PostContentWasChanged;
 use App\Post\Domain\ValueObjects\PostAuthor;
@@ -12,12 +11,12 @@ use App\Shared\Domain\AggregateRoot;
 
 class Post extends AggregateRoot
 {
-    private string $id;
+    private PostId $id;
     private string $title;
     private string $content;
     private PostAuthor $author;
 
-    private function __construct(string $id)
+    private function __construct(PostId $id)
     {
         $this->id = $id;
     }
@@ -33,10 +32,12 @@ class Post extends AggregateRoot
         return $post;
     }
 
-    public static function recreateFrom(string $id, string $title, string $content, PostAuthor $author): self
+    public static function fromRawData(array $data): self
     {
+        $id = PostId::create($data['id']);
         $post = new static($id);
-        $event = new PostWasRecreated($id, $title, $content, $author);
+        $author = new PostAuthor($data['author_first_name'], $data['author_last_name']);
+        $event = new PostWasCreated($id, $data['title'], $data['content'], $author);
 
         $post->recordApplyAndPublishThat($event);
 
@@ -83,7 +84,7 @@ class Post extends AggregateRoot
         $this->content = $event->getContent();
     }
 
-    public function getId(): string
+    public function getId(): PostId
     {
         return $this->id;
     }

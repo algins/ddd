@@ -2,20 +2,21 @@
 
 namespace App\Post\Domain\Events;
 
+use App\Post\Domain\ValueObjects\PostId;
 use App\Shared\Domain\DomainEvent;
 
 class PostContentWasChanged implements DomainEvent
 {
-    private string $id;
+    private PostId $id;
     private string $content;
 
-    public function __construct(string $id, string $content)
+    public function __construct(PostId $id, string $content)
     {
         $this->id = $id;
         $this->content = $content;
     }
 
-    public function getId(): string
+    public function getId(): PostId
     {
         return $this->id;
     }

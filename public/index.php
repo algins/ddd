@@ -8,7 +8,6 @@ use App\Post\Infrastructure\Persistence\Session\SessionPostRepository;
 use App\Post\Infrastructure\Persistence\Session\Projections\PostContentWasChangedProjection;
 use App\Post\Infrastructure\Persistence\Session\Projections\PostTitleWasChangedProjection;
 use App\Post\Infrastructure\Persistence\Session\Projections\PostWasCreatedProjection;
-use App\Post\Infrastructure\Persistence\Session\Projections\PostWasRecreatedProjection;
 use App\Post\UI\Controllers\PostController;
 use App\Shared\Domain\DomainEventPublisher;
 use App\Shared\Infrastructure\Persistence\Projections\Projector;
@@ -33,7 +32,6 @@ $container->set(PostRepository::class, function () {
         new PostContentWasChangedProjection(),
         new PostTitleWasChangedProjection(),
         new PostWasCreatedProjection(),
-        new PostWasRecreatedProjection(),
     ]);
     return new SessionPostRepository($projector);
 });
@@ -47,7 +45,6 @@ $container->set(DomainEventPublisher::class, function () {
     DomainEventPublisher::instance()->subscribe(new PostContentWasChangedSubscriber());
     DomainEventPublisher::instance()->subscribe(new PostTitleWasChangedSubscriber());
     DomainEventPublisher::instance()->subscribe(new PostWasCreatedSubscriber());
-    DomainEventPublisher::instance()->subscribe(new PostWasRecreatedSubscriber());
 });
 
 $app = AppFactory::createFromContainer($container);

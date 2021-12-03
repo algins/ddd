@@ -5,6 +5,7 @@ namespace App\Post\Infrastructure\Persistence\Session;
 use App\Post\Domain\Post;
 use App\Post\Domain\PostRepository;
 use App\Post\Domain\ValueObjects\PostAuthor;
+use App\Post\Domain\ValueObjects\PostId;
 use App\Shared\Infrastructure\Persistence\Projections\Projector;
 use IllegalArgumentException;
 
@@ -26,12 +27,7 @@ class SessionPostRepository implements PostRepository
     public function findAll(): array
     {
         return array_map(function ($post) {
-            return Post::recreateFrom(
-                $post['id'],
-                $post['title'],
-                $post['content'],
-                new PostAuthor($post['author_first_name'], $post['author_last_name'])
-            );
+            return Post::fromRawData($post);
         }, $_SESSION['posts']);
     }
 
@@ -43,20 +39,16 @@ class SessionPostRepository implements PostRepository
             throw new IllegalArgumentException();
         }
 
-        return Post::recreateFrom(
-            $post['id'],
-            $post['title'],
-            $post['content'],
-            new PostAuthor($post['author_first_name'], $post['author_last_name'])
-        );
+        return Post::fromRawData($post);
     }
 
     public function save(Post $post): void
     {
         $postAuthor = $post->getAuthor();
+        $postId = $post->getId()->getValue();
 
-        $_SESSION['posts'][$post->getId()] = [
-            'id' => $post->getId(),
+        $_SESSION['posts'][$postId] = [
+            'id' => $postId,
             'title' => $post->getTitle(),
             'content' => $post->getContent(),
             'author_first_name' => $postAuthor->getFirstName(),
@@ -68,7 +60,7 @@ class SessionPostRepository implements PostRepository
 
     public function delete(Post $post): void
     {
-        unset($_SESSION['posts'][$post->getId()]);
+        unset($_SESSION['posts'][$post->getId()->getValue()]);
 
         $this->projector->project($post->recordedEvents());
     }

@@ -4,13 +4,14 @@
     <tbody>
         <?php foreach ($posts as $post) : ?>
             <tr>
-                <td width="10%">
-                    <a href="/posts/<?= $post->getId() ?>/edit"><?= htmlspecialchars($post->getTitle()) ?></a>
+                <td>
+                    <a href="/posts/<?= $post->getId()->getValue() ?>/edit"><?= htmlspecialchars($post->getId()->getValue()) ?></a>
                 </td>
+                <td><?= htmlspecialchars($post->getTitle()) ?></td>
                 <td><?= htmlspecialchars($post->getContent()) ?></td>
                 <td><?= $post->getAuthor()->getFirstName() .  ' ' . $post->getAuthor()->getLastName() ?></td>
                 <td width="10%">
-                    <form action="/posts/<?= $post->getId() ?>" method="post">
+                    <form action="/posts/<?= $post->getId()->getValue() ?>" method="post">
                         <input type="hidden" name="_METHOD" value="DELETE">
                         <input type="submit" value="Delete">
                     </form>
