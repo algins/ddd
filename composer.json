@@ -10,7 +10,6 @@
         "slim/http": "^1.2",
         "php-di/php-di": "^6.3",
         "slim/php-view": "^3.1",
-        "vlucas/valitron": "^1.4",
         "ramsey/uuid": "^4.2"
     },
     "require-dev": {

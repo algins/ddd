@@ -8,6 +8,7 @@ use App\Post\Domain\Events\PostContentWasChanged;
 use App\Post\Domain\ValueObjects\PostAuthor;
 use App\Post\Domain\ValueObjects\PostId;
 use App\Shared\Domain\AggregateRoot;
+use InvalidArgumentException;
 
 class Post extends AggregateRoot
 {
@@ -18,7 +19,7 @@ class Post extends AggregateRoot
 
     private function __construct(PostId $id)
     {
-        $this->id = $id;
+        $this->setId($id);
     }
 
     public static function writeNewFrom(string $title, string $content, PostAuthor $author): self
@@ -60,28 +61,42 @@ class Post extends AggregateRoot
 
     protected function applyPostWasCreated(PostWasCreated $event): void
     {
-        $this->id = $event->getId();
-        $this->title = $event->getTitle();
-        $this->content = $event->getContent();
-        $this->author = $event->getAuthor();
-    }
-
-    protected function applyPostWasRecreated(PostWasRecreated $event): void
-    {
-        $this->id = $event->getId();
-        $this->title = $event->getTitle();
-        $this->content = $event->getContent();
-        $this->author = $event->getAuthor();
+        $this->setId($event->getId());
+        $this->setTitle($event->getTitle());
+        $this->setContent($event->getContent());
+        $this->setAuthor($event->getAuthor());
     }
 
     protected function applyPostTitleWasChanged(PostTitleWasChanged $event): void
     {
-        $this->title = $event->getTitle();
+        $this->setTitle($event->getTitle());
     }
 
     protected function applyPostContentWasChanged(PostContentWasChanged $event): void
     {
-        $this->content = $event->getContent();
+        $this->setContent($event->getContent());
+    }
+
+    private function setId(PostId $id): void
+    {
+        $this->id = $id;
+    }
+
+    private function setTitle(string $title): void
+    {
+        $this->assertTitleIsNotEmpty($title);
+        $this->title = $title;
+    }
+
+    private function setContent(string $content): void
+    {
+        $this->assertContentIsNotEmpty($content);
+        $this->content = $content;
+    }
+
+    private function setAuthor(PostAuthor $author): void
+    {
+        $this->author = $author;
     }
 
     public function getId(): PostId
@@ -102,5 +117,19 @@ class Post extends AggregateRoot
     public function getAuthor(): PostAuthor
     {
         return $this->author;
+    }
+
+    private function assertTitleIsNotEmpty(string $title): void
+    {
+        if (empty($title)) {
+            throw new InvalidArgumentException('Empty title');
+        }
+    }
+
+    private function assertContentIsNotEmpty(string $content): void
+    {
+        if (empty($content)) {
+            throw new InvalidArgumentException('Empty content');
+        }
     }
 }

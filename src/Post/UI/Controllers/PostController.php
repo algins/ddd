@@ -6,11 +6,11 @@ use App\Post\Domain\Post;
 use App\Post\Domain\PostRepository;
 use App\Post\Domain\ValueObjects\PostAuthor;
 use IllegalArgumentException;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\PhpRenderer;
-use Valitron\Validator;
 
 class PostController
 {
@@ -48,22 +48,21 @@ class PostController
     {
         $postData = $request->getParsedBodyParam('post');
 
-        $validator = new Validator($postData);
-        $validator->rule('required', ['title', 'content']);
-
-        if ($validator->validate()) {
+        try {
             $postAuthor = new PostAuthor('John', 'Doe');
             $post = Post::writeNewFrom($postData['title'], $postData['content'], $postAuthor);
-            $this->repository->save($post);
-            return $response->withRedirect('/posts');
+        } catch (InvalidArgumentException $e) {
+            $params = [
+                'postData' => $postData,
+                'errors' => [$e->getMessage()],
+            ];
+
+            return $this->renderer->render($response->withStatus(422), 'create.phtml', $params);
         }
 
-        $params = [
-            'postData' => $postData,
-            'errors' => $validator->errors(),
-        ];
+        $this->repository->save($post);
 
-        return $this->renderer->render($response->withStatus(422), 'create.phtml', $params);
+        return $response->withRedirect('/posts');
     }
 
     public function edit(Request $request, Response $response, array $args): Response
@@ -100,26 +99,25 @@ class PostController
 
         $postData = $request->getParsedBodyParam('post');
 
-        $validator = new Validator($postData);
-        $validator->rule('required', ['title', 'content']);
-
-        if ($validator->validate()) {
+        try {
             $post->changeTitleFor($postData['title']);
             $post->changeContentFor($postData['content']);
-            $this->repository->save($post);
-            return $response->withRedirect('/posts');
+        } catch (InvalidArgumentException $e) {
+            $params = [
+                'postData' => [
+                    'id' => $id,
+                    'title' => $postData['title'],
+                    'content' => $postData['content'],
+                ],
+                'errors' => [$e->getMessage()],
+            ];
+
+            return $this->renderer->render($response->withStatus(422), 'edit.phtml', $params);
         }
 
-        $params = [
-            'postData' => [
-                'id' => $id,
-                'title' => $postData['title'],
-                'content' => $postData['content'],
-            ],
-            'errors' => $validator->errors(),
-        ];
+        $this->repository->save($post);
 
-        return $this->renderer->render($response->withStatus(422), 'edit.phtml', $params);
+        return $response->withRedirect('/posts');
     }
 
     public function destroy(Request $request, Response $response, array $args): Response
