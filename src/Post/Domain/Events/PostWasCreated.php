@@ -5,6 +5,7 @@ namespace App\Post\Domain\Events;
 use App\Post\Domain\ValueObjects\PostAuthor;
 use App\Post\Domain\ValueObjects\PostId;
 use App\Shared\Domain\DomainEvent;
+use DateTimeImmutable;
 
 class PostWasCreated implements DomainEvent
 {
@@ -12,6 +13,7 @@ class PostWasCreated implements DomainEvent
     private string $title;
     private string $content;
     private PostAuthor $author;
+    private DateTimeImmutable $occuredOn;
 
     public function __construct(PostId $id, string $title, string $content, PostAuthor $author)
     {
@@ -19,6 +21,7 @@ class PostWasCreated implements DomainEvent
         $this->title = $title;
         $this->content = $content;
         $this->author = $author;
+        $this->occuredOn = new DateTimeImmutable();
     }
 
     public function getId(): PostId
@@ -39,5 +42,10 @@ class PostWasCreated implements DomainEvent
     public function getAuthor(): PostAuthor
     {
         return $this->author;
+    }
+
+    public function getOccuredOn(): DateTimeImmutable
+    {
+        return $this->occuredOn;
     }
 }
