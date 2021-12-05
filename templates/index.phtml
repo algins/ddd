@@ -5,13 +5,13 @@
         <?php foreach ($posts as $post) : ?>
             <tr>
                 <td>
-                    <a href="/posts/<?= $post->getId()->getValue() ?>/edit"><?= htmlspecialchars($post->getId()->getValue()) ?></a>
+                    <a href="/posts/<?= $post->getId() ?>/edit"><?= htmlspecialchars($post->getId()) ?></a>
                 </td>
                 <td><?= htmlspecialchars($post->getTitle()) ?></td>
                 <td><?= htmlspecialchars($post->getContent()) ?></td>
-                <td><?= $post->getAuthor()->getFirstName() .  ' ' . $post->getAuthor()->getLastName() ?></td>
+                <td><?= $post->getAuthor() ?></td>
                 <td width="10%">
-                    <form action="/posts/<?= $post->getId()->getValue() ?>" method="post">
+                    <form action="/posts/<?= $post->getId() ?>" method="post">
                         <input type="hidden" name="_METHOD" value="DELETE">
                         <input type="submit" value="Delete">
                     </form>

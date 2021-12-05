@@ -2,9 +2,15 @@
 
 namespace App\Post\UI\Controllers;
 
-use App\Post\Domain\Post;
+use App\Post\Application\Create\CreatePostRequest;
+use App\Post\Application\Create\CreatePostService;
+use App\Post\Application\Delete\DeletePostService;
+use App\Post\Application\Find\FindPostService;
+use App\Post\Application\FindAll\FindAllPostsService;
+use App\Post\Application\PostResponse;
+use App\Post\Application\Update\UpdatePostRequest;
+use App\Post\Application\Update\UpdatePostService;
 use App\Post\Domain\PostRepository;
-use App\Post\Domain\ValueObjects\PostAuthor;
 use IllegalArgumentException;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -15,17 +21,18 @@ use Slim\Views\PhpRenderer;
 class PostController
 {
     private PhpRenderer $renderer;
-    private PostRepository $repository;
+    private PostRepository $postRepository;
 
-    public function __construct(ContainerInterface $container, PostRepository $repository)
+    public function __construct(ContainerInterface $container, PostRepository $postRepository)
     {
         $this->renderer = $container->get('renderer');
-        $this->repository = $repository;
+        $this->postRepository = $postRepository;
     }
 
     public function index(Request $request, Response $response): Response
     {
-        $posts = $this->repository->findAll();
+        $findAllPostsService = new FindAllPostsService($this->postRepository);
+        $posts = $findAllPostsService->execute();
 
         $params = [
             'posts' => $posts,
@@ -37,7 +44,7 @@ class PostController
     public function create(Request $request, Response $response): Response
     {
         $params = [
-            'postData' => [],
+            'post' => null,
             'errors' => [],
         ];
 
@@ -47,20 +54,19 @@ class PostController
     public function store(Request $request, Response $response): Response
     {
         $postData = $request->getParsedBodyParam('post');
+        $createPostService = new CreatePostService($this->postRepository);
+        $createPostRequest = new CreatePostRequest($postData['title'], $postData['content']);
 
         try {
-            $postAuthor = new PostAuthor('John', 'Doe');
-            $post = Post::writeNewFrom($postData['title'], $postData['content'], $postAuthor);
+            $createPostService->execute($createPostRequest);
         } catch (InvalidArgumentException $e) {
             $params = [
-                'postData' => $postData,
+                'post' => $createPostRequest,
                 'errors' => [$e->getMessage()],
             ];
 
             return $this->renderer->render($response->withStatus(422), 'create.phtml', $params);
         }
-
-        $this->repository->save($post);
 
         return $response->withRedirect('/posts');
     }
@@ -68,19 +74,16 @@ class PostController
     public function edit(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];
+        $findPostService = new FindPostService($this->postRepository);
 
         try {
-            $post = $this->repository->findById($id);
+            $post = $findPostService->execute($id);
         } catch (IllegalArgumentException $e) {
             return $response->write('Post not found')->withStatus(404);
         }
 
         $params = [
-            'postData' => [
-                'id' => $id,
-                'title' => $post->getTitle(),
-                'content' => $post->getContent(),
-            ],
+            'post' => $post,
             'errors' => [],
         ];
 
@@ -90,32 +93,22 @@ class PostController
     public function update(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];
+        $postData = $request->getParsedBodyParam('post');
+        $updatePostService = new UpdatePostService($this->postRepository);
+        $updatePostRequest = new UpdatePostRequest($id, $postData['title'], $postData['content']);
 
         try {
-            $post = $this->repository->findById($id);
+            $updatePostService->execute($updatePostRequest);
         } catch (IllegalArgumentException $e) {
             return $response->write('Post not found')->withStatus(404);
-        }
-
-        $postData = $request->getParsedBodyParam('post');
-
-        try {
-            $post->changeTitleFor($postData['title']);
-            $post->changeContentFor($postData['content']);
         } catch (InvalidArgumentException $e) {
             $params = [
-                'postData' => [
-                    'id' => $id,
-                    'title' => $postData['title'],
-                    'content' => $postData['content'],
-                ],
+                'post' => $updatePostRequest,
                 'errors' => [$e->getMessage()],
             ];
 
             return $this->renderer->render($response->withStatus(422), 'edit.phtml', $params);
         }
-
-        $this->repository->save($post);
 
         return $response->withRedirect('/posts');
     }
@@ -123,14 +116,13 @@ class PostController
     public function destroy(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];
+        $deletePostService = new DeletePostService($this->postRepository);
 
         try {
-            $post = $this->repository->findById($id);
+            $deletePostService->execute($id);
         } catch (IllegalArgumentException $e) {
             return $response->write('Post not found')->withStatus(404);
         }
-
-        $this->repository->delete($post);
 
         return $response->withRedirect('/posts');
     }

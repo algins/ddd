@@ -10,13 +10,13 @@
     <div>
         <label>Title *</label>
         <br>
-        <input type="text" name="post[title]" value="<?= htmlspecialchars($postData['title'] ?? '') ?>">
+        <input type="text" name="post[title]" value="<?= $post ? htmlspecialchars($post->getTitle()) : '' ?>">
     </div>
     <br>
     <div>
         <label>Content *</label>
         <br>
-        <textarea name="post[content]"><?= htmlspecialchars($postData['content'] ?? '') ?></textarea>
+        <textarea name="post[content]"><?= $post ? htmlspecialchars($post->getContent()) : '' ?></textarea>
     </div>
     <br>
     <input type="submit" value="Create">

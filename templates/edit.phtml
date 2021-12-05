@@ -6,18 +6,18 @@
     <?php endforeach ?>
     <br>
 <?php endif ?>
-<form action="/posts/<?= $postData['id'] ?>" method="post">
+<form action="/posts/<?= $post->getId() ?>" method="post">
     <input type="hidden" name="_METHOD" value="PATCH">
     <div>
         <label>Title *</label>
         <br>
-        <input type="text" name="post[title]" value="<?= htmlspecialchars($postData['title']) ?>">
+        <input type="text" name="post[title]" value="<?= htmlspecialchars($post->getTitle()) ?>">
     </div>
     <br>
     <div>
         <label>Content *</label>
         <br>
-        <textarea name="post[content]"><?= htmlspecialchars($postData['content']) ?></textarea>
+        <textarea name="post[content]"><?= htmlspecialchars($post->getContent()) ?></textarea>
     </div>
     <br>
     <input type="submit" value="Update">
