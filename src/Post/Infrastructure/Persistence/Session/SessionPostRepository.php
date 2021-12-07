@@ -17,7 +17,9 @@ class SessionPostRepository implements PostRepository
     {
         $this->projector = $projector;
 
-        session_start();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
 
         if (!array_key_exists('posts', $_SESSION)) {
             $_SESSION['posts'] = [];

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Post\UI\Controllers;
+namespace App\Post\UI\WEB\Controllers;
 
 use App\Post\Application\Create\CreatePostRequest;
 use App\Post\Application\Create\CreatePostService;
