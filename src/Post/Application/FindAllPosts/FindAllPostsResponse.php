@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Post\Application;
+namespace App\Post\Application\FindAllPosts;
 
 use App\Post\Domain\Post;
 
-class PostResponse
+class FindAllPostsResponse
 {
     private string $id;
     private string $title;

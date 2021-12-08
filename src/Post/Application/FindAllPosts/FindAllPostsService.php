@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Post\Application\FindAll;
+namespace App\Post\Application\FindAllPosts;
 
-use App\Post\Application\PostResponse;
 use App\Post\Domain\PostRepository;
 
 class FindAllPostsService
@@ -19,7 +18,7 @@ class FindAllPostsService
         $posts = $this->postRepository->findAll();
 
         return array_map(function ($post) {
-            return new PostResponse($post);
+            return new FindAllPostsResponse($post);
         }, $posts);
     }
 }

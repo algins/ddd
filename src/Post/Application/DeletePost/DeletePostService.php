@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Post\Application\Delete;
+namespace App\Post\Application\DeletePost;
 
 use App\Post\Domain\PostRepository;
 

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Post\Application\Find;
+namespace App\Post\Application\FindPost;
 
-use App\Post\Application\PostResponse;
 use App\Post\Domain\PostRepository;
 
 class FindPostService
@@ -14,10 +13,10 @@ class FindPostService
         $this->postRepository = $postRepository;
     }
 
-    public function execute(string $id): PostResponse
+    public function execute(string $id): FindPostResponse
     {
         $post = $this->postRepository->findById($id);
 
-        return new PostResponse($post);
+        return new FindPostResponse($post);
     }
 }

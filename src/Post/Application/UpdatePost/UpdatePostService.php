@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Post\Application\Update;
+namespace App\Post\Application\UpdatePost;
 
 use App\Post\Domain\Post;
 use App\Post\Domain\PostRepository;

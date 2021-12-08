@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Post\Application\Create;
+namespace App\Post\Application\CreatePost;
 
 use App\Post\Domain\Post;
 use App\Post\Domain\PostRepository;

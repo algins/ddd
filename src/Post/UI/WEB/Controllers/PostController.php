@@ -2,14 +2,13 @@
 
 namespace App\Post\UI\WEB\Controllers;
 
-use App\Post\Application\Create\CreatePostRequest;
-use App\Post\Application\Create\CreatePostService;
-use App\Post\Application\Delete\DeletePostService;
-use App\Post\Application\Find\FindPostService;
-use App\Post\Application\FindAll\FindAllPostsService;
-use App\Post\Application\PostResponse;
-use App\Post\Application\Update\UpdatePostRequest;
-use App\Post\Application\Update\UpdatePostService;
+use App\Post\Application\CreatePost\CreatePostRequest;
+use App\Post\Application\CreatePost\CreatePostService;
+use App\Post\Application\DeletePost\DeletePostService;
+use App\Post\Application\FindAllPosts\FindAllPostsService;
+use App\Post\Application\FindPost\FindPostService;
+use App\Post\Application\UpdatePost\UpdatePostRequest;
+use App\Post\Application\UpdatePost\UpdatePostService;
 use App\Post\Domain\PostRepository;
 use IllegalArgumentException;
 use InvalidArgumentException;

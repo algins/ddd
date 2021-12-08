@@ -1,23 +1,16 @@
 <?php
 
-namespace App\Post\Application\Update;
+namespace App\Post\Application\CreatePost;
 
-class UpdatePostRequest
+class CreatePostRequest
 {
-    private string $id;
     private string $title;
     private string $content;
 
-    public function __construct(string $id, string $title, string $content)
+    public function __construct(string $title, string $content)
     {
-        $this->id = $id;
         $this->title = $title;
         $this->content = $content;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     public function getTitle(): string
