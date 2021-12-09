@@ -1,16 +1,16 @@
 <?php
 
-use App\Post\Domain\EventStore;
-use App\Post\Domain\PostRepository;
-use App\Post\Domain\PersistDomainEventSubscriber;
-use App\Post\Infrastructure\Persistence\Session\SessionEventStore;
-use App\Post\Infrastructure\Persistence\Session\SessionPostRepository;
-use App\Post\Infrastructure\Persistence\Session\Projections\PostContentWasChangedProjection;
-use App\Post\Infrastructure\Persistence\Session\Projections\PostTitleWasChangedProjection;
-use App\Post\Infrastructure\Persistence\Session\Projections\PostWasCreatedProjection;
-use App\Post\UI\API\Controllers\EventController;
-use App\Post\UI\WEB\Controllers\PostController;
+use App\Blog\Domain\Event\PersistDomainEventSubscriber;
+use App\Blog\Domain\Model\Post\PostRepository;
+use App\Blog\Infrastructure\Persistence\Session\SessionEventStore;
+use App\Blog\Infrastructure\Persistence\Session\SessionPostRepository;
+use App\Blog\Infrastructure\Persistence\Session\Projections\PostContentWasChangedProjection;
+use App\Blog\Infrastructure\Persistence\Session\Projections\PostTitleWasChangedProjection;
+use App\Blog\Infrastructure\Persistence\Session\Projections\PostWasCreatedProjection;
+use App\Blog\UI\API\Controllers\EventController;
+use App\Blog\UI\WEB\Controllers\PostController;
 use App\Shared\Domain\DomainEventPublisher;
+use App\Shared\Domain\Model\Event\EventStore;
 use App\Shared\Infrastructure\Persistence\Projections\Projector;
 use DI\Container;
 use Slim\Factory\AppFactory;

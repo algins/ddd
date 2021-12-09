@@ -2,7 +2,7 @@
 
 namespace App\Shared\Infrastructure\Persistence\Projections;
 
-use App\Shared\Domain\DomainEvent;
+use App\Shared\Domain\Model\Event\DomainEvent;
 
 class Projector
 {

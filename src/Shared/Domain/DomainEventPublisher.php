@@ -2,6 +2,8 @@
 
 namespace App\Shared\Domain;
 
+use App\Shared\Domain\Model\Event\DomainEvent;
+
 class DomainEventPublisher
 {
     private array $subscribers;

@@ -2,6 +2,7 @@
 
 namespace App\Shared\Domain;
 
+use App\Shared\Domain\Model\Event\DomainEvent;
 use ReflectionClass;
 
 class AggregateRoot
