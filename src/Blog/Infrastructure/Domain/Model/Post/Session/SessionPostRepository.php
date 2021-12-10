@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Blog\Infrastructure\Persistence\Session;
+namespace App\Blog\Infrastructure\Domain\Model\Post\Session;
 
 use App\Blog\Domain\Model\Post\Post;
-use App\Blog\Domain\Model\Post\PostRepository;
 use App\Blog\Domain\Model\Post\PostAuthor;
 use App\Blog\Domain\Model\Post\PostId;
-use App\Shared\Infrastructure\Persistence\Projections\Projector;
+use App\Blog\Domain\Model\Post\PostRepository;
+use App\Shared\Infrastructure\Projection\Projector;
 use IllegalArgumentException;
 
 class SessionPostRepository implements PostRepository

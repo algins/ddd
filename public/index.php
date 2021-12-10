@@ -2,16 +2,16 @@
 
 use App\Blog\Domain\Event\PersistDomainEventSubscriber;
 use App\Blog\Domain\Model\Post\PostRepository;
-use App\Blog\Infrastructure\Persistence\Session\SessionEventStore;
-use App\Blog\Infrastructure\Persistence\Session\SessionPostRepository;
-use App\Blog\Infrastructure\Persistence\Session\Projections\PostContentWasChangedProjection;
-use App\Blog\Infrastructure\Persistence\Session\Projections\PostTitleWasChangedProjection;
-use App\Blog\Infrastructure\Persistence\Session\Projections\PostWasCreatedProjection;
+use App\Blog\Infrastructure\Domain\Model\Post\Session\SessionPostRepository;
+use App\Blog\Infrastructure\Projection\Session\PostContentWasChangedProjection;
+use App\Blog\Infrastructure\Projection\Session\PostTitleWasChangedProjection;
+use App\Blog\Infrastructure\Projection\Session\PostWasCreatedProjection;
 use App\Blog\UI\API\Controllers\EventController;
 use App\Blog\UI\WEB\Controllers\PostController;
 use App\Shared\Domain\DomainEventPublisher;
 use App\Shared\Domain\Model\Event\EventStore;
-use App\Shared\Infrastructure\Persistence\Projections\Projector;
+use App\Shared\Infrastructure\Domain\Event\Session\SessionEventStore;
+use App\Shared\Infrastructure\Projection\Projector;
 use DI\Container;
 use Slim\Factory\AppFactory;
 use Slim\Middleware\MethodOverrideMiddleware;

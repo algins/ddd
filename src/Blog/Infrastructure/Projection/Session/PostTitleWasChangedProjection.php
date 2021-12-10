@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Blog\Infrastructure\Persistence\Session\Projections;
+namespace App\Blog\Infrastructure\Projection\Session;
 
 use App\Blog\Domain\Model\Post\PostTitleWasChanged;
 use App\Shared\Domain\Model\Event\DomainEvent;
-use App\Shared\Infrastructure\Persistence\Projections\Projection;
+use App\Shared\Infrastructure\Projection\Projection;
 
 class PostTitleWasChangedProjection implements Projection
 {

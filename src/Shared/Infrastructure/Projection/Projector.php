@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Infrastructure\Persistence\Projections;
+namespace App\Shared\Infrastructure\Projection;
 
 use App\Shared\Domain\Model\Event\DomainEvent;
 
