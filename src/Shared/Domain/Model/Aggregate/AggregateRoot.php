@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Shared\Domain;
+namespace App\Shared\Domain\Model\Aggregate;
 
 use App\Shared\Domain\Model\Event\DomainEvent;
+use App\Shared\Domain\Model\Event\DomainEventPublisher;
 use ReflectionClass;
 
 class AggregateRoot

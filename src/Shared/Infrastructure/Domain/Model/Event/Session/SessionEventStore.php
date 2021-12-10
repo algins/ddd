@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Infrastructure\Domain\Event\Session;
+namespace App\Shared\Infrastructure\Domain\Model\Event\Session;
 
 use App\Shared\Domain\Model\Event\EventStore;
 use App\Shared\Domain\Model\Event\DomainEvent;

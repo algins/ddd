@@ -2,8 +2,8 @@
 
 namespace App\Blog\Domain\Event;
 
-use App\Shared\Domain\DomainEventSubscriber;
 use App\Shared\Domain\Model\Event\DomainEvent;
+use App\Shared\Domain\Model\Event\DomainEventSubscriber;
 use App\Shared\Domain\Model\Event\EventStore;
 
 class PersistDomainEventSubscriber implements DomainEventSubscriber

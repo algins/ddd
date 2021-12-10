@@ -2,7 +2,7 @@
 
 namespace App\Blog\Domain\Model\Post;
 
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Model\Aggregate\AggregateRoot;
 use InvalidArgumentException;
 
 class Post extends AggregateRoot
