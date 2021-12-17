@@ -2,6 +2,7 @@
 
 namespace App\Blog\Domain\Model\Post;
 
+use App\Blog\Domain\Model\User\UserId;
 use App\Shared\Domain\Model\Aggregate\AggregateRoot;
 use InvalidArgumentException;
 
@@ -10,18 +11,18 @@ class Post extends AggregateRoot
     private PostId $id;
     private string $title;
     private string $content;
-    private PostAuthor $author;
+    private UserId $authorId;
 
     private function __construct(PostId $id)
     {
         $this->setId($id);
     }
 
-    public static function writeNewFrom(string $title, string $content, PostAuthor $author): self
+    public static function writeNewFrom(string $title, string $content, UserId $authorId): self
     {
         $id = PostId::create();
         $post = new static($id);
-        $event = new PostWasCreated($id, $title, $content, $author);
+        $event = new PostWasCreated($id, $title, $content, $authorId);
 
         $post->recordApplyAndPublishThat($event);
 
@@ -32,8 +33,8 @@ class Post extends AggregateRoot
     {
         $id = PostId::create($data['id']);
         $post = new static($id);
-        $author = new PostAuthor($data['author_first_name'], $data['author_last_name']);
-        $event = new PostWasCreated($id, $data['title'], $data['content'], $author);
+        $authorId = UserId::create($data['author_id']);
+        $event = new PostWasCreated($id, $data['title'], $data['content'], $authorId);
 
         $post->recordApplyAndPublishThat($event);
 
@@ -59,7 +60,7 @@ class Post extends AggregateRoot
         $this->setId($event->getId());
         $this->setTitle($event->getTitle());
         $this->setContent($event->getContent());
-        $this->setAuthor($event->getAuthor());
+        $this->setAuthorId($event->getAuthorId());
     }
 
     protected function applyPostTitleWasChanged(PostTitleWasChanged $event): void
@@ -89,9 +90,9 @@ class Post extends AggregateRoot
         $this->content = $content;
     }
 
-    private function setAuthor(PostAuthor $author): void
+    private function setAuthorId(UserId $authorId): void
     {
-        $this->author = $author;
+        $this->authorId = $authorId;
     }
 
     public function getId(): PostId
@@ -109,9 +110,9 @@ class Post extends AggregateRoot
         return $this->content;
     }
 
-    public function getAuthor(): PostAuthor
+    public function getAuthorId(): UserId
     {
-        return $this->author;
+        return $this->authorId;
     }
 
     private function assertTitleIsNotEmpty(string $title): void

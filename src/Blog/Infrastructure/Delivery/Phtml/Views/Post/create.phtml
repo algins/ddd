@@ -1,0 +1,34 @@
+<a href="/posts">List</a>
+<hr>
+<?php if (count($errors) > 0): ?>
+    <?php foreach ($errors as $error): ?>
+        <div><?= $error ?></div>
+    <?php endforeach ?>
+    <br>
+<?php endif ?>
+<form action="/posts" method="post">
+    <div>
+        <label>Author *</label>
+        <br>
+        <select name="post[author_id]">
+            <option></option>
+            <?php foreach ($users as $user) : ?>
+                <option value="<?= $user->getId() ?>" <?= isset($old) && $user->getId() === $old->getAuthorId() ? 'selected' : '' ?>><?= $user->getFirstName() . ' ' . $user->getLastName() ?></option>
+            <?php endforeach ?>
+        </select>
+    </div>
+    <br>
+    <div>
+        <label>Title *</label>
+        <br>
+        <input type="text" name="post[title]" value="<?= isset($old) ? htmlspecialchars($old->getTitle()) : '' ?>">
+    </div>
+    <br>
+    <div>
+        <label>Content *</label>
+        <br>
+        <textarea name="post[content]"><?= isset($old) ? htmlspecialchars($old->getContent()) : '' ?></textarea>
+    </div>
+    <br>
+    <input type="submit" value="Create">
+</form>

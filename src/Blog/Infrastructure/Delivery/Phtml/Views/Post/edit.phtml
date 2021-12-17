@@ -1,0 +1,24 @@
+<a href="/posts">List</a>
+<hr>
+<?php if (count($errors) > 0): ?>
+    <?php foreach ($errors as $error): ?>
+        <div><?= $error ?></div>
+    <?php endforeach ?>
+    <br>
+<?php endif ?>
+<form action="/posts/<?= $post->getId() ?>" method="post">
+    <input type="hidden" name="_METHOD" value="PATCH">
+    <div>
+        <label>Title *</label>
+        <br>
+        <input type="text" name="post[title]" value="<?= isset($old) ? htmlspecialchars($old->getTitle()) : htmlspecialchars($post->getTitle()) ?>">
+    </div>
+    <br>
+    <div>
+        <label>Content *</label>
+        <br>
+        <textarea name="post[content]"><?= isset($old) ? htmlspecialchars($old->getContent()) : htmlspecialchars($post->getContent()) ?></textarea>
+    </div>
+    <br>
+    <input type="submit" value="Update">
+</form>

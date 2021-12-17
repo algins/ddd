@@ -2,7 +2,9 @@
 
 namespace App\Blog\Domain\Model\User;
 
+use App\Blog\Domain\Model\Post\Post;
 use App\Shared\Domain\Model\Aggregate\AggregateRoot;
+use InvalidArgumentException;
 
 class User extends AggregateRoot
 {
@@ -98,6 +100,11 @@ class User extends AggregateRoot
     public function getLastName(): string
     {
         return $this->lastName;
+    }
+
+    public function createPost(string $title, string $content): Post
+    {
+        return Post::writeNewFrom($title, $content, $this->id);
     }
 
     private function assertFirstNameIsNotEmpty(string $firstName): void

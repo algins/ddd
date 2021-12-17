@@ -1,5 +1,5 @@
 start:
-	php -S localhost:8080 -t public public/index.php
+	php -S localhost:8081 -t src/Blog/Infrastructure/Delivery/Web/Slim/Public
 
 lint:
 	composer phpcs

@@ -20,7 +20,7 @@ class UserWasCreated implements DomainEvent
         $this->occuredOn = new DateTimeImmutable();
     }
 
-    public function getId(): PostId
+    public function getId(): UserId
     {
         return $this->id;
     }

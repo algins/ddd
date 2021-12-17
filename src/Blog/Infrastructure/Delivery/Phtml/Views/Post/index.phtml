@@ -1,0 +1,22 @@
+<a href="/posts/create">Create New</a>
+<hr>
+<table width="100%">
+    <tbody>
+        <?php foreach ($posts as $post) : ?>
+            <tr>
+                <td>
+                    <a href="/posts/<?= $post->getId() ?>/edit"><?= htmlspecialchars($post->getId()) ?></a>
+                </td>
+                <td><?= htmlspecialchars($post->getTitle()) ?></td>
+                <td><?= htmlspecialchars($post->getContent()) ?></td>
+                <td><?= $post->getAuthorName() ?></td>
+                <td width="10%">
+                    <form action="/posts/<?= $post->getId() ?>" method="post">
+                        <input type="hidden" name="_METHOD" value="DELETE">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+            <tr>
+        <?php endforeach ?>
+    </tbody>
+</table>
