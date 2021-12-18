@@ -28,7 +28,7 @@ class CreatePostService
             throw new InvalidArgumentException('Empty author');
         }
 
-        $post = $author->createPost($title, $content);
+        $post = $author->createPost($this->postRepository->nextIdentity(), $title, $content);
 
         $this->postRepository->save($post);
     }

@@ -3,6 +3,7 @@
 namespace App\Blog\Infrastructure\Domain\Model\User\Session;
 
 use App\Blog\Domain\Model\User\User;
+use App\Blog\Domain\Model\User\UserId;
 use App\Blog\Domain\Model\User\UserRepository;
 
 class SessionUserRepository implements UserRepository
@@ -50,5 +51,10 @@ class SessionUserRepository implements UserRepository
     public function delete(User $user): void
     {
         unset($_SESSION['users'][$user->getId()->getValue()]);
+    }
+
+    public function nextIdentity(): UserId
+    {
+        return UserId::create();
     }
 }

@@ -18,9 +18,8 @@ class Post extends AggregateRoot
         $this->setId($id);
     }
 
-    public static function writeNewFrom(string $title, string $content, UserId $authorId): self
+    public static function writeNewFrom(PostId $id, string $title, string $content, UserId $authorId): self
     {
-        $id = PostId::create();
         $post = new static($id);
         $event = new PostWasCreated($id, $title, $content, $authorId);
 

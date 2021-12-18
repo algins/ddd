@@ -3,6 +3,7 @@
 namespace App\Blog\Domain\Model\User;
 
 use App\Blog\Domain\Model\Post\Post;
+use App\Blog\Domain\Model\Post\PostId;
 use App\Shared\Domain\Model\Aggregate\AggregateRoot;
 use InvalidArgumentException;
 
@@ -17,9 +18,8 @@ class User extends AggregateRoot
         $this->setId($id);
     }
 
-    public static function writeNewFrom(string $firstName, string $lastName): self
+    public static function writeNewFrom(UserId $id, string $firstName, string $lastName): self
     {
-        $id = UserId::create();
         $user = new static($id);
         $event = new UserWasCreated($id, $firstName, $lastName);
 
@@ -102,9 +102,9 @@ class User extends AggregateRoot
         return $this->lastName;
     }
 
-    public function createPost(string $title, string $content): Post
+    public function createPost(PostId $id, string $title, string $content): Post
     {
-        return Post::writeNewFrom($title, $content, $this->id);
+        return Post::writeNewFrom($id, $title, $content, $this->id);
     }
 
     private function assertFirstNameIsNotEmpty(string $firstName): void

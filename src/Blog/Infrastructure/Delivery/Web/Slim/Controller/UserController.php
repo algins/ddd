@@ -14,6 +14,7 @@ use App\Blog\Application\User\FindUser\FindUserService;
 use App\Blog\Application\User\UpdateUser\UpdateUserRequest;
 use App\Blog\Application\User\UpdateUser\UpdateUserService;
 use App\Blog\Domain\Model\User\UserDoesNotExistException;
+use App\Blog\Domain\Model\User\UserFactory;
 use App\Blog\Domain\Model\User\UserRepository;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -24,13 +25,16 @@ use Slim\Views\PhpRenderer;
 class UserController
 {
     private PhpRenderer $renderer;
+    private UserFactory $userFactory;
     private UserRepository $userRepository;
 
     public function __construct(
         ContainerInterface $container,
+        UserFactory $userFactory,
         UserRepository $userRepository
     ) {
         $this->renderer = $container->get('renderer');
+        $this->userFactory = $userFactory;
         $this->userRepository = $userRepository;
     }
 
@@ -60,7 +64,7 @@ class UserController
     {
         $userData = $request->getParsedBodyParam('user');
 
-        $createUserService = new CreateUserService($this->userRepository);
+        $createUserService = new CreateUserService($this->userFactory, $this->userRepository);
         $createUserRequest = new CreateUserRequest($userData['first_name'], $userData['last_name']);
 
         try {

@@ -3,6 +3,7 @@
 namespace App\Blog\Infrastructure\Domain\Model\Post\Session;
 
 use App\Blog\Domain\Model\Post\Post;
+use App\Blog\Domain\Model\Post\PostId;
 use App\Blog\Domain\Model\Post\PostRepository;
 
 class SessionPostRepository implements PostRepository
@@ -51,5 +52,10 @@ class SessionPostRepository implements PostRepository
     public function delete(Post $post): void
     {
         unset($_SESSION['posts'][$post->getId()->getValue()]);
+    }
+
+    public function nextIdentity(): PostId
+    {
+        return PostId::create();
     }
 }

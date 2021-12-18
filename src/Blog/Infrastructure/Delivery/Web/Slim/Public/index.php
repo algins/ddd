@@ -1,11 +1,15 @@
 <?php
 
 use App\Blog\Domain\Event\PersistDomainEventSubscriber;
+use App\Blog\Domain\Model\Post\PostFactory;
 use App\Blog\Domain\Model\Post\PostRepository;
+use App\Blog\Domain\Model\User\UserFactory;
 use App\Blog\Domain\Model\User\UserRepository;
 use App\Blog\Infrastructure\Delivery\Web\Slim\Controller\PostController;
 use App\Blog\Infrastructure\Delivery\Web\Slim\Controller\UserController;
+use App\Blog\Infrastructure\Domain\Model\Post\Session\SessionPostFactory;
 use App\Blog\Infrastructure\Domain\Model\Post\Session\SessionPostRepository;
+use App\Blog\Infrastructure\Domain\Model\User\Session\SessionUserFactory;
 use App\Blog\Infrastructure\Domain\Model\User\Session\SessionUserRepository;
 use App\Shared\Domain\Model\Event\DomainEventPublisher;
 use App\Shared\Domain\Model\Event\EventStore;
@@ -25,16 +29,12 @@ $container->set('renderer', function (Container $container) {
     return $renderer;
 });
 
-$container->set(EventStore::class, function () {
-    return new SessionEventStore();
+$container->set(PostFactory::class, function () {
+    return new SessionPostFactory();
 });
 
 $container->set(PostRepository::class, function () {
     return new SessionPostRepository();
-});
-
-$container->set(UserRepository::class, function () {
-    return new SessionUserRepository();
 });
 
 $container->set(PostController::class, function (Container $container) {
@@ -43,9 +43,22 @@ $container->set(PostController::class, function (Container $container) {
     return new PostController($container, $postRepository, $userRepository);
 });
 
+$container->set(UserFactory::class, function () {
+    return new SessionUserFactory();
+});
+
+$container->set(UserRepository::class, function () {
+    return new SessionUserRepository();
+});
+
 $container->set(UserController::class, function (Container $container) {
+    $userFactory = $container->get(UserFactory::class);
     $userRepository = $container->get(UserRepository::class);
-    return new UserController($container, $userRepository);
+    return new UserController($container, $userFactory, $userRepository);
+});
+
+$container->set(EventStore::class, function () {
+    return new SessionEventStore();
 });
 
 $container->set(PersistDomainEventSubscriber::class, function (Container $container) {
