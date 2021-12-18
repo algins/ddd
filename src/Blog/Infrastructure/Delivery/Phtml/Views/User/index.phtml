@@ -1,6 +1,15 @@
-<a href="/users/create">Create New</a>
-<hr>
-<table width="100%">
+<a class="btn btn-primary my-3" href="/users/create">Create New</a>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th></th>
+        </tr>
+    </thead>
+
     <tbody>
         <?php foreach ($users as $user) : ?>
             <tr>
@@ -9,10 +18,10 @@
                 </td>
                 <td><?= htmlspecialchars($user->getFirstName()) ?></td>
                 <td><?= htmlspecialchars($user->getLastName()) ?></td>
-                <td width="10%">
+                <td class="text-center" width="10%">
                     <form action="/users/<?= $user->getId() ?>" method="post">
                         <input type="hidden" name="_METHOD" value="DELETE">
-                        <input type="submit" value="Delete">
+                        <input class="btn btn-danger" type="submit" value="Delete">
                     </form>
                 </td>
             <tr>

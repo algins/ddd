@@ -1,24 +1,28 @@
-<a href="/posts">List</a>
-<hr>
-<?php if (count($errors) > 0): ?>
-    <?php foreach ($errors as $error): ?>
-        <div><?= $error ?></div>
-    <?php endforeach ?>
-    <br>
-<?php endif ?>
-<form action="/posts/<?= $post->getId() ?>" method="post">
-    <input type="hidden" name="_METHOD" value="PATCH">
-    <div>
-        <label>Title *</label>
-        <br>
-        <input type="text" name="post[title]" value="<?= isset($old) ? htmlspecialchars($old->getTitle()) : htmlspecialchars($post->getTitle()) ?>">
+<a class="btn btn-link float-end" href="/posts">Back</a>
+
+<div class="row mt-3">
+    <div class="col-4">
+        <?php if (count($errors) > 0): ?>
+            <?php foreach ($errors as $error): ?>
+                <div class="alert alert-danger mb-0"><?= $error ?></div>
+            <?php endforeach ?>
+            <br>
+        <?php endif ?>
+
+        <form action="/posts/<?= $post->getId() ?>" method="post">
+            <input type="hidden" name="_METHOD" value="PATCH">
+
+            <div class="mb-3">
+                <label class="form-label">Title *</label>
+                <input class="form-control" type="text" name="post[title]" value="<?= isset($old) ? htmlspecialchars($old->getTitle()) : htmlspecialchars($post->getTitle()) ?>">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Content *</label>
+                <textarea class="form-control" name="post[content]"><?= isset($old) ? htmlspecialchars($old->getContent()) : htmlspecialchars($post->getContent()) ?></textarea>
+            </div>
+
+            <input class="btn btn-success" type="submit" value="Update">
+        </form>
     </div>
-    <br>
-    <div>
-        <label>Content *</label>
-        <br>
-        <textarea name="post[content]"><?= isset($old) ? htmlspecialchars($old->getContent()) : htmlspecialchars($post->getContent()) ?></textarea>
-    </div>
-    <br>
-    <input type="submit" value="Update">
-</form>
+</div>
