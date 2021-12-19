@@ -21,9 +21,9 @@ class SessionUserRepository implements UserRepository
 
     public function findAll(): array
     {
-        return array_map(function ($user) {
-            return User::fromRawData($user);
-        }, $_SESSION['users']);
+        $activeUsers = array_filter($_SESSION['users'], fn($user) => !$user['deleted_at']);
+
+        return array_map(fn($user) => User::fromRawData($user), $activeUsers);
     }
 
     public function findById(string $id): ?User
@@ -31,6 +31,10 @@ class SessionUserRepository implements UserRepository
         $user = $_SESSION['users'][$id] ?? null;
 
         if (!$user) {
+            return null;
+        }
+
+        if ($user['deleted_at']) {
             return null;
         }
 
@@ -45,12 +49,8 @@ class SessionUserRepository implements UserRepository
             'id' => $userId,
             'first_name' => $user->getFirstName(),
             'last_name' => $user->getLastName(),
+            'deleted_at' => $user->getDeletedAt(),
         ];
-    }
-
-    public function delete(User $user): void
-    {
-        unset($_SESSION['users'][$user->getId()->getValue()]);
     }
 
     public function nextIdentity(): UserId

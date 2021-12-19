@@ -10,7 +10,5 @@ interface PostRepository
 
     public function save(Post $post): void;
 
-    public function delete(Post $post): void;
-
     public function nextIdentity(): PostId;
 }

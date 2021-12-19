@@ -4,6 +4,7 @@ namespace App\Blog\Domain\Model\Post;
 
 use App\Blog\Domain\Model\User\UserId;
 use App\Shared\Domain\Model\Aggregate\AggregateRoot;
+use DateTimeImmutable;
 use InvalidArgumentException;
 
 class Post extends AggregateRoot
@@ -12,10 +13,12 @@ class Post extends AggregateRoot
     private string $title;
     private string $content;
     private UserId $authorId;
+    private ?DateTimeImmutable $deletedAt;
 
     private function __construct(PostId $id)
     {
         $this->setId($id);
+        $this->setDeletedAt(null);
     }
 
     public static function writeNewFrom(PostId $id, string $title, string $content, UserId $authorId): self
@@ -54,6 +57,13 @@ class Post extends AggregateRoot
         $this->recordApplyAndPublishThat($event);
     }
 
+    public function markAsDeleted(): void
+    {
+        $event = new PostWasDeleted($this->id);
+
+        $this->recordApplyAndPublishThat($event);
+    }
+
     protected function applyPostWasCreated(PostWasCreated $event): void
     {
         $this->setId($event->getId());
@@ -70,6 +80,11 @@ class Post extends AggregateRoot
     protected function applyPostContentWasChanged(PostContentWasChanged $event): void
     {
         $this->setContent($event->getContent());
+    }
+
+    protected function applyPostWasDeleted(PostWasDeleted $event): void
+    {
+        $this->setDeletedAt(new DateTimeImmutable());
     }
 
     private function setId(PostId $id): void
@@ -94,6 +109,11 @@ class Post extends AggregateRoot
         $this->authorId = $authorId;
     }
 
+    private function setDeletedAt(?DateTimeImmutable $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
+    }
+
     public function getId(): PostId
     {
         return $this->id;
@@ -112,6 +132,11 @@ class Post extends AggregateRoot
     public function getAuthorId(): UserId
     {
         return $this->authorId;
+    }
+
+    public function getDeletedAt(): ?DateTimeImmutable
+    {
+        return $this->deletedAt;
     }
 
     private function assertTitleIsNotEmpty(string $title): void

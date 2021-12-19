@@ -23,6 +23,8 @@ class DeleteUserService
             throw new UserDoesNotExistException();
         }
 
-        $this->userRepository->delete($user);
+        $user->markAsDeleted();
+
+        $this->userRepository->save($user);
     }
 }

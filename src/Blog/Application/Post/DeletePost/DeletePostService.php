@@ -23,6 +23,8 @@ class DeletePostService
             throw new PostDoesNotExistException();
         }
 
-        $this->postRepository->delete($post);
+        $post->markAsDeleted();
+
+        $this->postRepository->save($post);
     }
 }

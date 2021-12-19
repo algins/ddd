@@ -5,6 +5,7 @@ namespace App\Blog\Domain\Model\User;
 use App\Blog\Domain\Model\Post\Post;
 use App\Blog\Domain\Model\Post\PostId;
 use App\Shared\Domain\Model\Aggregate\AggregateRoot;
+use DateTimeImmutable;
 use InvalidArgumentException;
 
 class User extends AggregateRoot
@@ -12,10 +13,12 @@ class User extends AggregateRoot
     private UserId $id;
     private string $firstName;
     private string $lastName;
+    private ?DateTimeImmutable $deletedAt;
 
     private function __construct(UserId $id)
     {
         $this->setId($id);
+        $this->setDeletedAt(null);
     }
 
     public static function writeNewFrom(UserId $id, string $firstName, string $lastName): self
@@ -53,6 +56,13 @@ class User extends AggregateRoot
         $this->recordApplyAndPublishThat($event);
     }
 
+    public function markAsDeleted(): void
+    {
+        $event = new UserWasDeleted($this->id);
+
+        $this->recordApplyAndPublishThat($event);
+    }
+
     protected function applyUserWasCreated(UserWasCreated $event): void
     {
         $this->setId($event->getId());
@@ -68,6 +78,11 @@ class User extends AggregateRoot
     protected function applyUserLastNameWasChanged(UserLastNameWasChanged $event): void
     {
         $this->setLastName($event->getLastName());
+    }
+
+    protected function applyUserWasDeleted(UserWasDeleted $event): void
+    {
+        $this->setDeletedAt(new DateTimeImmutable());
     }
 
     private function setId(UserId $id): void
@@ -87,6 +102,11 @@ class User extends AggregateRoot
         $this->lastName = $lastName;
     }
 
+    private function setDeletedAt(?DateTimeImmutable $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
+    }
+
     public function getId(): UserId
     {
         return $this->id;
@@ -100,6 +120,11 @@ class User extends AggregateRoot
     public function getLastName(): string
     {
         return $this->lastName;
+    }
+
+    public function getDeletedAt(): ?DateTimeImmutable
+    {
+        return $this->deletedAt;
     }
 
     public function createPost(PostId $id, string $title, string $content): Post

@@ -21,9 +21,9 @@ class SessionPostRepository implements PostRepository
 
     public function findAll(): array
     {
-        return array_map(function ($post) {
-            return Post::fromRawData($post);
-        }, $_SESSION['posts']);
+        $activePosts = array_filter($_SESSION['posts'], fn($post) => !$post['deleted_at']);
+
+        return array_map(fn($post) => Post::fromRawData($post), $activePosts);
     }
 
     public function findById(string $id): ?Post
@@ -31,6 +31,10 @@ class SessionPostRepository implements PostRepository
         $post = $_SESSION['posts'][$id] ?? null;
 
         if (!$post) {
+            return null;
+        }
+
+        if ($post['deleted_at']) {
             return null;
         }
 
@@ -46,12 +50,8 @@ class SessionPostRepository implements PostRepository
             'title' => $post->getTitle(),
             'content' => $post->getContent(),
             'author_id' => $post->getAuthorId()->getValue(),
+            'deleted_at' => $post->getDeletedAt(),
         ];
-    }
-
-    public function delete(Post $post): void
-    {
-        unset($_SESSION['posts'][$post->getId()->getValue()]);
     }
 
     public function nextIdentity(): PostId
