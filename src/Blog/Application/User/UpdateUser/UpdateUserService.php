@@ -20,6 +20,7 @@ class UpdateUserService
         $id = $request->getId();
         $firstName = $request->getFirstName();
         $lastName = $request->getLastName();
+
         $user = $this->userRepository->findById($id);
 
         if (!$user) {

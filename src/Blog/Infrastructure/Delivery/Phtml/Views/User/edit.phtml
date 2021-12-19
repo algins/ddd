@@ -9,7 +9,7 @@
             <br>
         <?php endif ?>
 
-        <form action="/users/<?= $user->getId() ?>" method="post">
+        <form action="/users/<?= isset($old) ? $old->getId() : $user->getId() ?>" method="post">
             <input type="hidden" name="_METHOD" value="PATCH">
 
             <div class="mb-3">

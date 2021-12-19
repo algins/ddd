@@ -111,7 +111,7 @@ class UserController
         $updateUserRequest = new UpdateUserRequest($id, $userData['first_name'], $userData['last_name']);
 
         try {
-            $updateUserService->execute($updateUserRequest);
+            $user = $updateUserService->execute($updateUserRequest);
         } catch (UserDoesNotExistException $e) {
             return $response->write('User not found')->withStatus(404);
         } catch (InvalidArgumentException $e) {
