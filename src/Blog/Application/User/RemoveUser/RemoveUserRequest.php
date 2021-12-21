@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Blog\Application\Post\DeletePost;
+namespace App\Blog\Application\User\RemoveUser;
 
-class DeletePostRequest
+class RemoveUserRequest
 {
     private string $id;
 

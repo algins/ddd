@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Blog\Application\User\FindUser;
+namespace App\Blog\Application\User\RemoveUser;
 
 use App\Blog\Domain\Model\User\UserDoesNotExistException;
 use App\Blog\Domain\Model\User\UserRepository;
 
-class FindUserService
+class RemoveUserService
 {
     private UserRepository $userRepository;
 
@@ -14,7 +14,7 @@ class FindUserService
         $this->userRepository = $userRepository;
     }
 
-    public function execute(FindUserRequest $request): FindUserResponse
+    public function execute(RemoveUserRequest $request): void
     {
         $id = $request->getId();
         $user = $this->userRepository->findById($id);
@@ -23,6 +23,8 @@ class FindUserService
             throw new UserDoesNotExistException();
         }
 
-        return new FindUserResponse($user);
+        $user->markAsDeleted();
+
+        $this->userRepository->save($user);
     }
 }

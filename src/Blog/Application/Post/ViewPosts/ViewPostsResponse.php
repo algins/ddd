@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Blog\Application\Post\FindAllPosts;
+namespace App\Blog\Application\Post\ViewPosts;
 
 use App\Blog\Domain\Model\Post\Post;
 use App\Blog\Domain\Model\User\User;
 
-class FindAllPostsResponse
+class ViewPostsResponse
 {
     private string $id;
     private string $title;

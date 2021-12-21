@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Blog\Application\User\FindAllUsers;
+namespace App\Blog\Application\User\ViewUsers;
 
 use App\Blog\Domain\Model\User\UserRepository;
 
-class FindAllUsersService
+class ViewUsersService
 {
     private UserRepository $userRepository;
 
@@ -18,7 +18,7 @@ class FindAllUsersService
         $users = $this->userRepository->findAll();
 
         return array_map(function ($user) {
-            return new FindAllUsersResponse($user);
+            return new ViewUsersResponse($user);
         }, $users);
     }
 }

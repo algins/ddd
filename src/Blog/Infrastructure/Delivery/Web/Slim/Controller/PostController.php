@@ -2,18 +2,18 @@
 
 namespace App\Blog\Infrastructure\Delivery\Web\Slim\Controller;
 
-use App\Blog\Application\Post\CreatePost\CreatePostRequest;
-use App\Blog\Application\Post\CreatePost\CreatePostService;
-use App\Blog\Application\Post\DeletePost\DeletePostRequest;
-use App\Blog\Application\Post\DeletePost\DeletePostService;
-use App\Blog\Application\Post\FindAllPosts\FindAllPostsResponse;
-use App\Blog\Application\Post\FindAllPosts\FindAllPostsService;
-use App\Blog\Application\Post\FindPost\FindPostRequest;
-use App\Blog\Application\Post\FindPost\FindPostResponse;
-use App\Blog\Application\Post\FindPost\FindPostService;
+use App\Blog\Application\Post\MakePost\MakePostRequest;
+use App\Blog\Application\Post\MakePost\MakePostService;
+use App\Blog\Application\Post\RemovePost\RemovePostRequest;
+use App\Blog\Application\Post\RemovePost\RemovePostService;
 use App\Blog\Application\Post\UpdatePost\UpdatePostRequest;
 use App\Blog\Application\Post\UpdatePost\UpdatePostService;
-use App\Blog\Application\User\FindAllUsers\FindAllUsersService;
+use App\Blog\Application\Post\ViewPost\ViewPostRequest;
+use App\Blog\Application\Post\ViewPost\ViewPostResponse;
+use App\Blog\Application\Post\ViewPost\ViewPostService;
+use App\Blog\Application\Post\ViewPosts\ViewPostsResponse;
+use App\Blog\Application\Post\ViewPosts\ViewPostsService;
+use App\Blog\Application\User\ViewUsers\ViewUsersService;
 use App\Blog\Domain\Model\Post\PostDoesNotExistException;
 use App\Blog\Domain\Model\Post\PostRepository;
 use App\Blog\Domain\Model\User\UserRepository;
@@ -41,8 +41,8 @@ class PostController
 
     public function index(Request $request, Response $response): Response
     {
-        $findAllPostsService = new FindAllPostsService($this->postRepository, $this->userRepository);
-        $posts = $findAllPostsService->execute();
+        $viewPostsService = new ViewPostsService($this->postRepository, $this->userRepository);
+        $posts = $viewPostsService->execute();
 
         $params = [
             'posts' => $posts,
@@ -53,8 +53,8 @@ class PostController
 
     public function create(Request $request, Response $response): Response
     {
-        $findAllUsersService = new FindAllUsersService($this->userRepository);
-        $users = $findAllUsersService->execute();
+        $viewUsersService = new ViewUsersService($this->userRepository);
+        $users = $viewUsersService->execute();
 
         $params = [
             'post' => null,
@@ -69,17 +69,17 @@ class PostController
     {
         $postData = $request->getParsedBodyParam('post');
 
-        $createPostService = new CreatePostService($this->postRepository, $this->userRepository);
-        $createPostRequest = new CreatePostRequest($postData['title'], $postData['content'], $postData['author_id']);
+        $makePostService = new MakePostService($this->postRepository, $this->userRepository);
+        $makePostRequest = new MakePostRequest($postData['title'], $postData['content'], $postData['author_id']);
 
         try {
-            $createPostService->execute($createPostRequest);
+            $makePostService->execute($makePostRequest);
         } catch (InvalidArgumentException $e) {
-            $findAllUsersService = new FindAllUsersService($this->userRepository);
-            $users = $findAllUsersService->execute();
+            $viewUsersService = new ViewUsersService($this->userRepository);
+            $users = $viewUsersService->execute();
 
             $params = [
-                'old' => $createPostRequest,
+                'old' => $makePostRequest,
                 'users' => $users,
                 'errors' => [$e->getMessage()],
             ];
@@ -94,11 +94,11 @@ class PostController
     {
         $id = $args['id'];
 
-        $findPostService = new FindPostService($this->postRepository, $this->userRepository);
-        $findPostRequest = new FindPostRequest($id);
+        $viewPostService = new ViewPostService($this->postRepository, $this->userRepository);
+        $viewPostRequest = new ViewPostRequest($id);
 
         try {
-            $post = $findPostService->execute($findPostRequest);
+            $post = $viewPostService->execute($viewPostRequest);
         } catch (PostDoesNotExistException $e) {
             return $response->write('Post not found')->withStatus(404);
         }
@@ -139,11 +139,11 @@ class PostController
     {
         $id = $args['id'];
 
-        $deletePostService = new DeletePostService($this->postRepository);
-        $deletePostRequest = new DeletePostRequest($id);
+        $removePostService = new RemovePostService($this->postRepository);
+        $removePostRequest = new RemovePostRequest($id);
 
         try {
-            $deletePostService->execute($deletePostRequest);
+            $removePostService->execute($removePostRequest);
         } catch (PostDoesNotExistException $e) {
             return $response->write('Post not found')->withStatus(404);
         }

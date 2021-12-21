@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Blog\Application\Post\FindAllPosts;
+namespace App\Blog\Application\Post\ViewPosts;
 
 use App\Blog\Domain\Model\Post\PostRepository;
 use App\Blog\Domain\Model\User\UserRepository;
 
-class FindAllPostsService
+class ViewPostsService
 {
     private PostRepository $postRepository;
     private UserRepository $userRepository;
@@ -22,7 +22,7 @@ class FindAllPostsService
 
         return array_map(function ($post) {
             $author = $this->userRepository->findById($post->getAuthorId()->getValue());
-            return new FindAllPostsResponse($post, $author);
+            return new ViewPostsResponse($post, $author);
         }, $posts);
     }
 }

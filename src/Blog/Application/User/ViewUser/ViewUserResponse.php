@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Blog\Application\User\FindUser;
+namespace App\Blog\Application\User\ViewUser;
 
 use App\Blog\Domain\Model\User\User;
 
-class FindUserResponse
+class ViewUserResponse
 {
     private string $id;
     private string $firstName;

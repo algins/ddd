@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Blog\Application\Post\CreatePost;
+namespace App\Blog\Application\Post\MakePost;
 
-class CreatePostRequest
+class MakePostRequest
 {
     private string $title;
     private string $content;

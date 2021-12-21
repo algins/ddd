@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Blog\Application\Post\CreatePost;
+namespace App\Blog\Application\Post\MakePost;
 
 use App\Blog\Domain\Model\Post\PostRepository;
 use App\Blog\Domain\Model\User\UserRepository;
 use InvalidArgumentException;
 
-class CreatePostService
+class MakePostService
 {
     private PostRepository $postRepository;
     private UserRepository $userRepository;
@@ -17,7 +17,7 @@ class CreatePostService
         $this->userRepository = $userRepository;
     }
 
-    public function execute(CreatePostRequest $request): void
+    public function execute(MakePostRequest $request): void
     {
         $title = $request->getTitle();
         $content = $request->getContent();
@@ -28,7 +28,7 @@ class CreatePostService
             throw new InvalidArgumentException('Empty author');
         }
 
-        $post = $author->createPost($this->postRepository->nextIdentity(), $title, $content);
+        $post = $author->makePost($this->postRepository->nextIdentity(), $title, $content);
 
         $this->postRepository->save($post);
     }

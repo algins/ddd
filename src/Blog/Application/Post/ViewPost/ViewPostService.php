@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Blog\Application\Post\FindPost;
+namespace App\Blog\Application\Post\ViewPost;
 
 use App\Blog\Domain\Model\Post\PostDoesNotExistException;
 use App\Blog\Domain\Model\Post\PostRepository;
 use App\Blog\Domain\Model\User\UserRepository;
 
-class FindPostService
+class ViewPostService
 {
     private PostRepository $postRepository;
     private UserRepository $userRepository;
@@ -17,7 +17,7 @@ class FindPostService
         $this->userRepository = $userRepository;
     }
 
-    public function execute(FindPostRequest $request): FindPostResponse
+    public function execute(ViewPostRequest $request): ViewPostResponse
     {
         $id = $request->getId();
         $post = $this->postRepository->findById($id);
@@ -28,6 +28,6 @@ class FindPostService
 
         $author = $this->userRepository->findById($post->getAuthorId()->getValue());
 
-        return new FindPostResponse($post, $author);
+        return new ViewPostResponse($post, $author);
     }
 }

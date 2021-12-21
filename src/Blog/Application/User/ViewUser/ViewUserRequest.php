@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Blog\Application\Post\FindPost;
+namespace App\Blog\Application\User\ViewUser;
 
-class FindPostRequest
+class ViewUserRequest
 {
     private string $id;
 

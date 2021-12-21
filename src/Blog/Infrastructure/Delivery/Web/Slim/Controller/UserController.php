@@ -2,17 +2,17 @@
 
 namespace App\Blog\Infrastructure\Delivery\Web\Slim\Controller;
 
-use App\Blog\Application\User\CreateUser\CreateUserRequest;
-use App\Blog\Application\User\CreateUser\CreateUserService;
-use App\Blog\Application\User\DeleteUser\DeleteUserRequest;
-use App\Blog\Application\User\DeleteUser\DeleteUserService;
-use App\Blog\Application\User\FindAllUsers\FindAllUsersResponse;
-use App\Blog\Application\User\FindAllUsers\FindAllUsersService;
-use App\Blog\Application\User\FindUser\FindUserRequest;
-use App\Blog\Application\User\FindUser\FindUserResponse;
-use App\Blog\Application\User\FindUser\FindUserService;
+use App\Blog\Application\User\MakeUser\MakeUserRequest;
+use App\Blog\Application\User\MakeUser\MakeUserService;
+use App\Blog\Application\User\RemoveUser\RemoveUserRequest;
+use App\Blog\Application\User\RemoveUser\RemoveUserService;
 use App\Blog\Application\User\UpdateUser\UpdateUserRequest;
 use App\Blog\Application\User\UpdateUser\UpdateUserService;
+use App\Blog\Application\User\ViewUser\ViewUserRequest;
+use App\Blog\Application\User\ViewUser\ViewUserResponse;
+use App\Blog\Application\User\ViewUser\ViewUserService;
+use App\Blog\Application\User\ViewUsers\ViewUsersResponse;
+use App\Blog\Application\User\ViewUsers\ViewUsersService;
 use App\Blog\Domain\Model\User\UserDoesNotExistException;
 use App\Blog\Domain\Model\User\UserFactory;
 use App\Blog\Domain\Model\User\UserRepository;
@@ -40,8 +40,8 @@ class UserController
 
     public function index(Request $request, Response $response): Response
     {
-        $findAllUsersService = new FindAllUsersService($this->userRepository);
-        $users = $findAllUsersService->execute();
+        $viewUsersService = new ViewUsersService($this->userRepository);
+        $users = $viewUsersService->execute();
 
         $params = [
             'users' => $users,
@@ -64,14 +64,14 @@ class UserController
     {
         $userData = $request->getParsedBodyParam('user');
 
-        $createUserService = new CreateUserService($this->userFactory, $this->userRepository);
-        $createUserRequest = new CreateUserRequest($userData['first_name'], $userData['last_name']);
+        $makeUserService = new MakeUserService($this->userFactory, $this->userRepository);
+        $makeUserRequest = new MakeUserRequest($userData['first_name'], $userData['last_name']);
 
         try {
-            $createUserService->execute($createUserRequest);
+            $makeUserService->execute($makeUserRequest);
         } catch (InvalidArgumentException $e) {
             $params = [
-                'old' => $createUserRequest,
+                'old' => $makeUserRequest,
                 'errors' => [$e->getMessage()],
             ];
 
@@ -85,11 +85,11 @@ class UserController
     {
         $id = $args['id'];
 
-        $findUserService = new FindUserService($this->userRepository);
-        $findUserRequest = new FindUserRequest($id);
+        $viewUserService = new ViewUserService($this->userRepository);
+        $viewUserRequest = new ViewUserRequest($id);
 
         try {
-            $user = $findUserService->execute($findUserRequest);
+            $user = $viewUserService->execute($viewUserRequest);
         } catch (UserDoesNotExistException $e) {
             return $response->write('User not found')->withStatus(404);
         }
@@ -130,11 +130,11 @@ class UserController
     {
         $id = $args['id'];
 
-        $deleteUserService = new DeleteUserService($this->userRepository);
-        $deleteUserRequest = new DeleteUserRequest($id);
+        $removeUserService = new RemoveUserService($this->userRepository);
+        $removeUserRequest = new RemoveUserRequest($id);
 
         try {
-            $deleteUserService->execute($deleteUserRequest);
+            $removeUserService->execute($removeUserRequest);
         } catch (UserDoesNotExistException $e) {
             return $response->write('User not found')->withStatus(404);
         }

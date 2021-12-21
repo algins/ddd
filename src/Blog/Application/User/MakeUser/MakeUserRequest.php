@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Blog\Application\User\CreateUser;
+namespace App\Blog\Application\User\MakeUser;
 
-class CreateUserRequest
+class MakeUserRequest
 {
     private string $firstName;
     private string $lastName;

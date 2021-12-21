@@ -127,7 +127,7 @@ class User extends AggregateRoot
         return $this->deletedAt;
     }
 
-    public function createPost(PostId $id, string $title, string $content): Post
+    public function makePost(PostId $id, string $title, string $content): Post
     {
         return Post::writeNewFrom($id, $title, $content, $this->id);
     }
