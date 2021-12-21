@@ -1,5 +1,15 @@
 <?php
 
+use App\Blog\Application\Post\MakePost\MakePostService;
+use App\Blog\Application\Post\RemovePost\RemovePostService;
+use App\Blog\Application\Post\UpdatePost\UpdatePostService;
+use App\Blog\Application\Post\ViewPost\ViewPostService;
+use App\Blog\Application\Post\ViewPosts\ViewPostsService;
+use App\Blog\Application\User\MakeUser\MakeUserService;
+use App\Blog\Application\User\RemoveUser\RemoveUserService;
+use App\Blog\Application\User\UpdateUser\UpdateUserService;
+use App\Blog\Application\User\ViewUser\ViewUserService;
+use App\Blog\Application\User\ViewUsers\ViewUsersService;
 use App\Blog\Domain\Event\PersistDomainEventSubscriber;
 use App\Blog\Domain\Model\Post\PostFactory;
 use App\Blog\Domain\Model\Post\PostRepository;
@@ -29,20 +39,6 @@ $container->set('renderer', function (Container $container) {
     return $renderer;
 });
 
-$container->set(PostFactory::class, function () {
-    return new SessionPostFactory();
-});
-
-$container->set(PostRepository::class, function () {
-    return new SessionPostRepository();
-});
-
-$container->set(PostController::class, function (Container $container) {
-    $postRepository = $container->get(PostRepository::class);
-    $userRepository = $container->get(UserRepository::class);
-    return new PostController($container, $postRepository, $userRepository);
-});
-
 $container->set(UserFactory::class, function () {
     return new SessionUserFactory();
 });
@@ -54,7 +50,39 @@ $container->set(UserRepository::class, function () {
 $container->set(UserController::class, function (Container $container) {
     $userFactory = $container->get(UserFactory::class);
     $userRepository = $container->get(UserRepository::class);
-    return new UserController($container, $userFactory, $userRepository);
+
+    return new UserController(
+        $container,
+        new MakeUserService($userFactory, $userRepository),
+        new RemoveUserService($userRepository),
+        new UpdateUserService($userRepository),
+        new ViewUserService($userRepository),
+        new ViewUsersService($userRepository)
+    );
+});
+
+$container->set(PostFactory::class, function () {
+    return new SessionPostFactory();
+});
+
+$container->set(PostRepository::class, function () {
+    return new SessionPostRepository();
+});
+
+$container->set(PostController::class, function (Container $container) {
+    $postFactory = $container->get(PostFactory::class);
+    $postRepository = $container->get(PostRepository::class);
+    $userRepository = $container->get(UserRepository::class);
+
+    return new PostController(
+        $container,
+        new MakePostService($postRepository, $userRepository),
+        new RemovePostService($postRepository),
+        new UpdatePostService($postRepository),
+        new ViewPostService($postRepository, $userRepository),
+        new ViewPostsService($postRepository, $userRepository),
+        new ViewUsersService($userRepository)
+    );
 });
 
 $container->set(EventStore::class, function () {

@@ -15,8 +15,6 @@ use App\Blog\Application\Post\ViewPosts\ViewPostsResponse;
 use App\Blog\Application\Post\ViewPosts\ViewPostsService;
 use App\Blog\Application\User\ViewUsers\ViewUsersService;
 use App\Blog\Domain\Model\Post\PostDoesNotExistException;
-use App\Blog\Domain\Model\Post\PostRepository;
-use App\Blog\Domain\Model\User\UserRepository;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -26,23 +24,34 @@ use Slim\Views\PhpRenderer;
 class PostController
 {
     private PhpRenderer $renderer;
-    private PostRepository $postRepository;
-    private UserRepository $userRepository;
+    private MakePostService $makePostService;
+    private RemovePostService $removePostService;
+    private UpdatePostService $updatePostService;
+    private ViewPostService $viewPostService;
+    private ViewPostsService $viewPostsService;
+    private ViewUsersService $viewUsersService;
 
     public function __construct(
         ContainerInterface $container,
-        PostRepository $postRepository,
-        UserRepository $userRepository
+        MakePostService $makePostService,
+        RemovePostService $removePostService,
+        UpdatePostService $updatePostService,
+        ViewPostService $viewPostService,
+        ViewPostsService $viewPostsService,
+        ViewUsersService $viewUsersService
     ) {
         $this->renderer = $container->get('renderer');
-        $this->postRepository = $postRepository;
-        $this->userRepository = $userRepository;
+        $this->makePostService = $makePostService;
+        $this->removePostService = $removePostService;
+        $this->updatePostService = $updatePostService;
+        $this->viewPostService = $viewPostService;
+        $this->viewPostsService = $viewPostsService;
+        $this->viewUsersService = $viewUsersService;
     }
 
     public function index(Request $request, Response $response): Response
     {
-        $viewPostsService = new ViewPostsService($this->postRepository, $this->userRepository);
-        $posts = $viewPostsService->execute();
+        $posts = $this->viewPostsService->execute();
 
         $params = [
             'posts' => $posts,
@@ -53,8 +62,7 @@ class PostController
 
     public function create(Request $request, Response $response): Response
     {
-        $viewUsersService = new ViewUsersService($this->userRepository);
-        $users = $viewUsersService->execute();
+        $users = $this->viewUsersService->execute();
 
         $params = [
             'post' => null,
@@ -68,15 +76,12 @@ class PostController
     public function store(Request $request, Response $response): Response
     {
         $postData = $request->getParsedBodyParam('post');
-
-        $makePostService = new MakePostService($this->postRepository, $this->userRepository);
         $makePostRequest = new MakePostRequest($postData['title'], $postData['content'], $postData['author_id']);
 
         try {
-            $makePostService->execute($makePostRequest);
+            $this->makePostService->execute($makePostRequest);
         } catch (InvalidArgumentException $e) {
-            $viewUsersService = new ViewUsersService($this->userRepository);
-            $users = $viewUsersService->execute();
+            $users = $this->viewUsersService->execute();
 
             $params = [
                 'old' => $makePostRequest,
@@ -93,12 +98,10 @@ class PostController
     public function edit(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];
-
-        $viewPostService = new ViewPostService($this->postRepository, $this->userRepository);
         $viewPostRequest = new ViewPostRequest($id);
 
         try {
-            $post = $viewPostService->execute($viewPostRequest);
+            $post = $this->viewPostService->execute($viewPostRequest);
         } catch (PostDoesNotExistException $e) {
             return $response->write('Post not found')->withStatus(404);
         }
@@ -115,12 +118,10 @@ class PostController
     {
         $id = $args['id'];
         $postData = $request->getParsedBodyParam('post');
-
-        $updatePostService = new UpdatePostService($this->postRepository);
         $updatePostRequest = new UpdatePostRequest($id, $postData['title'], $postData['content']);
 
         try {
-            $updatePostService->execute($updatePostRequest);
+            $this->updatePostService->execute($updatePostRequest);
         } catch (PostDoesNotExistException $e) {
             return $response->write('Post not found')->withStatus(404);
         } catch (InvalidArgumentException $e) {
@@ -138,12 +139,10 @@ class PostController
     public function destroy(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];
-
-        $removePostService = new RemovePostService($this->postRepository);
         $removePostRequest = new RemovePostRequest($id);
 
         try {
-            $removePostService->execute($removePostRequest);
+            $this->removePostService->execute($removePostRequest);
         } catch (PostDoesNotExistException $e) {
             return $response->write('Post not found')->withStatus(404);
         }

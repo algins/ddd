@@ -14,8 +14,6 @@ use App\Blog\Application\User\ViewUser\ViewUserService;
 use App\Blog\Application\User\ViewUsers\ViewUsersResponse;
 use App\Blog\Application\User\ViewUsers\ViewUsersService;
 use App\Blog\Domain\Model\User\UserDoesNotExistException;
-use App\Blog\Domain\Model\User\UserFactory;
-use App\Blog\Domain\Model\User\UserRepository;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -25,23 +23,31 @@ use Slim\Views\PhpRenderer;
 class UserController
 {
     private PhpRenderer $renderer;
-    private UserFactory $userFactory;
-    private UserRepository $userRepository;
+    private MakeUserService $makeUserService;
+    private RemoveUserService $removeUserService;
+    private UpdateUserService $updateUserService;
+    private ViewUserService $viewUserService;
+    private ViewUsersService $viewUsersService;
 
     public function __construct(
         ContainerInterface $container,
-        UserFactory $userFactory,
-        UserRepository $userRepository
+        MakeUserService $makeUserService,
+        RemoveUserService $removeUserService,
+        UpdateUserService $updateUserService,
+        ViewUserService $viewUserService,
+        ViewUsersService $viewUsersService,
     ) {
         $this->renderer = $container->get('renderer');
-        $this->userFactory = $userFactory;
-        $this->userRepository = $userRepository;
+        $this->makeUserService = $makeUserService;
+        $this->removeUserService = $removeUserService;
+        $this->updateUserService = $updateUserService;
+        $this->viewUserService = $viewUserService;
+        $this->viewUsersService = $viewUsersService;
     }
 
     public function index(Request $request, Response $response): Response
     {
-        $viewUsersService = new ViewUsersService($this->userRepository);
-        $users = $viewUsersService->execute();
+        $users = $this->viewUsersService->execute();
 
         $params = [
             'users' => $users,
@@ -63,12 +69,10 @@ class UserController
     public function store(Request $request, Response $response): Response
     {
         $userData = $request->getParsedBodyParam('user');
-
-        $makeUserService = new MakeUserService($this->userFactory, $this->userRepository);
         $makeUserRequest = new MakeUserRequest($userData['first_name'], $userData['last_name']);
 
         try {
-            $makeUserService->execute($makeUserRequest);
+            $this->makeUserService->execute($makeUserRequest);
         } catch (InvalidArgumentException $e) {
             $params = [
                 'old' => $makeUserRequest,
@@ -84,12 +88,10 @@ class UserController
     public function edit(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];
-
-        $viewUserService = new ViewUserService($this->userRepository);
         $viewUserRequest = new ViewUserRequest($id);
 
         try {
-            $user = $viewUserService->execute($viewUserRequest);
+            $user = $this->viewUserService->execute($viewUserRequest);
         } catch (UserDoesNotExistException $e) {
             return $response->write('User not found')->withStatus(404);
         }
@@ -107,11 +109,10 @@ class UserController
         $id = $args['id'];
         $userData = $request->getParsedBodyParam('user');
 
-        $updateUserService = new UpdateUserService($this->userRepository);
         $updateUserRequest = new UpdateUserRequest($id, $userData['first_name'], $userData['last_name']);
 
         try {
-            $user = $updateUserService->execute($updateUserRequest);
+            $user = $this->updateUserService->execute($updateUserRequest);
         } catch (UserDoesNotExistException $e) {
             return $response->write('User not found')->withStatus(404);
         } catch (InvalidArgumentException $e) {
@@ -129,12 +130,10 @@ class UserController
     public function destroy(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];
-
-        $removeUserService = new RemoveUserService($this->userRepository);
         $removeUserRequest = new RemoveUserRequest($id);
 
         try {
-            $removeUserService->execute($removeUserRequest);
+            $this->removeUserService->execute($removeUserRequest);
         } catch (UserDoesNotExistException $e) {
             return $response->write('User not found')->withStatus(404);
         }
